@@ -28,6 +28,7 @@ export default function RootLayout({ children }: Props) {
           <link rel="icon" href="./favicon.ico" />
           <meta name="msapplication-TileColor" content="#da532c" />
           <meta name="theme-color" content="#ffffff" />
+          <title>Mekteb app</title>
         </Head>
         <body suppressHydrationWarning={true}>
           <div className="dark:bg-boxdark-2 dark:text-bodydark">
