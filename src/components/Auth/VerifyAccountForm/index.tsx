@@ -1,9 +1,14 @@
 "use client";
 import React from "react";
+import { useParams } from "next/navigation"; // Import useRouter from next/navigation
 
 const VerifyAccountForm: React.FC = () => {
+  const router = useParams();
+  const { token } = router;
+
   const onSubmit = (event: any) => {
     event.preventDefault();
+    console.log("Form submitted => ", token);
   };
   return (
     <>
