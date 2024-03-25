@@ -1,13 +1,13 @@
-"use client";
 import React from "react";
-import { useParams } from "next/navigation"; // Import useRouter from next/navigation
+import { Metadata } from "next";
 import PublicLayout from "@/components/Layouts/PublicLayout";
 import VerifyAccountForm from "@/components/Auth/VerifyAccountForm";
 
-const VerifyAccount: React.FC = () => {
-  const router = useParams();
-  const { token } = router;
+export const metadata: Metadata = {
+  title: "Mekteb app - Verify account",
+};
 
+const VerifyAccount: React.FC = () => {
   return (
     <PublicLayout>
       <VerifyAccountForm />
