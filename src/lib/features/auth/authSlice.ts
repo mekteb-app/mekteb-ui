@@ -2,6 +2,7 @@ import { createAppSlice } from "@/lib/createAppSlice";
 import { login } from "./authAPI";
 import { IAuthUser } from "@/interfaces/IAuthUser";
 import { ILoginPayload } from "@/interfaces/ILoginPayload";
+import { SESSION_TOKEN } from "@/constants";
 
 export interface AuthSliceState {
   currentUser?: IAuthUser;
@@ -34,6 +35,8 @@ export const authSlice = createAppSlice({
         fulfilled: (state, action) => {
           state.status = "idle";
           state.currentUser = action.payload;
+          // Set the access token to the local storage
+          localStorage.setItem(SESSION_TOKEN, action.payload.accessToken ?? "");
         },
         rejected: (state) => {
           state.status = "failed";
