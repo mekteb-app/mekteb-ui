@@ -1,11 +1,40 @@
 "use client";
+import { ILoginPayload } from "@/interfaces/ILoginPayload";
+import {
+  selectCurrentUser,
+  selectStatus,
+  setCurrentUserAsync,
+} from "@/lib/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import FormItemError from "@/components/FormElements/FormItemError";
 
 const LoginForm: React.FC = () => {
-  const onSubmit = (event: any) => {
-    event.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ILoginPayload>();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  const status = useAppSelector(selectStatus);
+  const currentUser = useAppSelector(selectCurrentUser);
+
+  const onSubmit = (data: ILoginPayload) => {
+    dispatch(setCurrentUserAsync(data));
   };
+
+  useEffect(() => {
+    if (status === "idle" && currentUser?.id) {
+      router.push("/"); // Redirect to the dashboard page.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, currentUser?.id]);
+
   return (
     <>
       {/* <!-- Sign In Form --> */}
@@ -15,17 +44,22 @@ const LoginForm: React.FC = () => {
             Login
           </h4>
         </div>
-        <form onSubmit={onSubmit}>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="p-6.5">
             <div className="mb-4.5">
               <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                 Email
               </label>
               <input
+                {...register("email", { required: true })}
                 type="email"
                 placeholder="Enter your email address"
                 className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
               />
+              {errors.email && (
+                <FormItemError>Email is required.</FormItemError>
+              )}
             </div>
 
             <div>
@@ -33,10 +67,14 @@ const LoginForm: React.FC = () => {
                 Password
               </label>
               <input
+                {...register("password", { required: true })}
                 type="password"
                 placeholder="Enter password"
                 className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
               />
+              {errors.password && (
+                <FormItemError>Please enter valid password.</FormItemError>
+              )}
             </div>
 
             <div className="mb-5.5 mt-5 flex items-center justify-between">
@@ -79,6 +117,11 @@ const LoginForm: React.FC = () => {
               className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
               type="submit"
             >
+              {status === "loading" ? (
+                <div className="h-6 w-6 animate-spin rounded-full border-4 border-solid border-secondary border-t-transparent mr-2"></div>
+              ) : (
+                <></>
+              )}{" "}
               Sign In
             </button>
           </div>

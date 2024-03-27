@@ -2,7 +2,7 @@
 import "flatpickr/dist/flatpickr.min.css";
 import "@/css/satoshi.css";
 import "@/css/style.css";
-import { ReactNode, memo, useEffect, useMemo, useState } from "react";
+import { ReactNode, memo, useMemo, useState } from "react";
 import Head from "next/head";
 import { StoreProvider } from "./StoreProvider";
 import SessionProvider from "../components/lib/JWTSessionProvider";
@@ -13,10 +13,6 @@ interface Props {
 
 const RootLayout = ({ children }: Props) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    console.log("RootLayout useEffect");
-  }, []);
 
   const memoizedChildren = useMemo(() => children, [children]);
 
