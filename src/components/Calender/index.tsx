@@ -3,7 +3,7 @@ import ProtectedLayout from "../Layouts/ProtectedLayout";
 
 const Calendar = () => {
   return (
-    <ProtectedLayout>
+    <ProtectedLayout pageName="Calendar">
       <div className="mx-auto max-w-7xl">
         <Breadcrumb pageName="Calendar" />
 
