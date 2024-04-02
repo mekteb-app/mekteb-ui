@@ -12,9 +12,9 @@ const ProtectedRoute: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   React.useEffect(() => {
     setLoading(true);
-    const { authToken } = session;
+    const { accessToken } = session;
     // Check if the user is authenticated, redirect to login if not.
-    if (!authToken) {
+    if (!accessToken) {
       router.push("/auth/signin"); // Redirect to the login page.
     }
     setLoading(false);
