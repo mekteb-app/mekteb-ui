@@ -5,7 +5,7 @@ import React from "react";
 
 // Create context.
 interface SessionContextType {
-  authToken?: string;
+  accessToken?: string;
   email?: string;
   role?: number;
 }
@@ -17,9 +17,19 @@ export default function JWTSessionProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [decodedSession, setDecodedSession] = React.useState<
-    Record<string, unknown>
-  >({});
+  const initailState = () => {
+    if (typeof window !== "undefined") {
+      return {
+        accessToken: window.localStorage.getItem(SESSION_TOKEN) || "",
+        email: "",
+        role: 0,
+      };
+    }
+    return {};
+  };
+
+  const [decodedSession, setDecodedSession] =
+    React.useState<Record<string, unknown>>(initailState());
 
   React.useEffect(() => {
     async function load() {

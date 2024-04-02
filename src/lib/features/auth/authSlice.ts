@@ -34,9 +34,12 @@ export const authSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           state.status = "idle";
-          state.currentUser = action.payload;
+          state.currentUser = action.payload.data || null;
           // Set the access token to the local storage
-          localStorage.setItem(SESSION_TOKEN, action.payload.accessToken ?? "");
+          localStorage.setItem(
+            SESSION_TOKEN,
+            action.payload.data?.accessToken ?? ""
+          );
         },
         rejected: (state) => {
           state.status = "failed";

@@ -2,12 +2,17 @@
 import React, { useState, ReactNode } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import Breadcrumb from "../Breadcrumbs/Breadcrumb";
+
+interface ProtectedLayoutProps {
+  children: ReactNode;
+  pageName: string;
+}
 
 export default function ProtectedLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  pageName,
+}: ProtectedLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <>
@@ -26,7 +31,9 @@ export default function ProtectedLayout({
           {/* <!-- ===== Main Content Start ===== --> */}
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-              {children}
+              <Breadcrumb pageName={pageName} />
+
+              <div className="flex flex-col gap-10">{children}</div>
             </div>
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
