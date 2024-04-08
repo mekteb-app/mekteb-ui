@@ -18,5 +18,7 @@ export const login = async (data: ILoginPayload) => {
   );
   const result: IAuthUserResponse = await response.json();
 
+  if (response.status !== 202) throw new Error(result.message);
+
   return result;
 };

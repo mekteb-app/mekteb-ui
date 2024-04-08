@@ -10,6 +10,7 @@ import Status from "../common/Status";
 import ProtectedLayout from "../Layouts/ProtectedLayout";
 import { formatDate } from "@/utils/date";
 import Pagination from "../Tables/Pagination";
+import UserForm from "./UserForm";
 
 const Users: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -28,21 +29,19 @@ const Users: React.FC = () => {
   return (
     <ProtectedLayout pageName="Users">
       <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default sm:px-7.5 lg:pb-1">
-        {/* <div className="flex justify-between">
-          <div className="flex gap-3 mb-4">
-            <div className="flex items-center gap-2 max-w-[300px]">
-              <input
-                type="text"
-                placeholder="Default Input"
-                className="text-sm w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-3 py-2 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter"
-              />
-            </div>
+        <div className="flex justify-between">
+          <div className="flex items-center gap-2 max-w-[300px] sm:w-1/2">
+            <input
+              type="text"
+              placeholder="Default Input"
+              className="text-sm w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-3 py-2 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter"
+            />
           </div>
-          <div className="flex  gap-3 mb-4">
-            <div className="flex items-center gap-2">Create</div>
+          <div className="flex">
+            <UserForm />
           </div>
-        </div> */}
-        <div className="max-w-full overflow-x-auto">
+        </div>
+        <div className="max-w-full overflow-x-auto mt-4">
           <table className="w-full table-auto text-sm">
             <thead>
               <tr className="bg-gray-2 text-left ">

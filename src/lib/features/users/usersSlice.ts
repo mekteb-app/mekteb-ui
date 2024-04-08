@@ -1,7 +1,8 @@
 import { createAppSlice } from "@/lib/createAppSlice";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { fetchUsers } from "./usersAPI";
+import { createUser, fetchUsers } from "./usersAPI";
 import { IUser } from "@/interfaces/IUser";
+import { IUserPayload } from "@/interfaces/IUserPayload";
 
 export interface UsersSliceState {
   users: IUser[];
@@ -50,6 +51,27 @@ export const usersSlice = createAppSlice({
         },
       }
     ),
+    createUserAsync: create.asyncThunk(
+      async (data: IUserPayload) => {
+        const response = await createUser(data);
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.status = "idle";
+          state.users = [action.payload.data, ...(state.users || [])];
+          state.count = state.count || 0 + 1;
+        },
+        rejected: (state) => {
+          console.log("rejected");
+          state.status = "failed";
+        },
+      }
+    ),
   }),
   // Selectors
   selectors: {
@@ -59,7 +81,8 @@ export const usersSlice = createAppSlice({
 });
 
 // Action creators are generated for each case reducer function.
-export const { setUsersAsync, updateUser } = usersSlice.actions;
+export const { setUsersAsync, updateUser, createUserAsync } =
+  usersSlice.actions;
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
 export const { selectUsers, selectUsersCount } = usersSlice.selectors;

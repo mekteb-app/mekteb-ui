@@ -3,6 +3,7 @@ import React, { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "./lib/JWTSessionProvider";
 import Loader from "./common/Loader";
+import { SESSION_TOKEN } from "@/constants";
 
 const ProtectedRoute: React.FC<{ children: ReactNode }> = ({ children }) => {
   const router = useRouter();
@@ -12,7 +13,10 @@ const ProtectedRoute: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   React.useEffect(() => {
     setLoading(true);
-    const { accessToken } = session;
+    // TODO Access token should be ONLY from session
+    // The way is implemented due to login proces where session is not updated with access token
+    const accessToken =
+      session.accessToken || localStorage.getItem(SESSION_TOKEN);
     // Check if the user is authenticated, redirect to login if not.
     if (!accessToken) {
       router.push("/auth/signin"); // Redirect to the login page.

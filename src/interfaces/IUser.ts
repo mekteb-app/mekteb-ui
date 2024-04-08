@@ -9,6 +9,7 @@ export interface IUser {
   email: string;
   role: number;
   phone: string;
+  birthdate: string;
   status: Status;
   created_at: string;
   updated_at: string;
