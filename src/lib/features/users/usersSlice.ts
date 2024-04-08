@@ -6,7 +6,7 @@ import { IUserPayload } from "@/interfaces/IUserPayload";
 
 export interface UsersSliceState {
   users: IUser[];
-  status: "idle" | "loading" | "failed";
+  status: "idle" | "loading" | "failed" | "created";
   count: number;
 }
 
@@ -62,7 +62,7 @@ export const usersSlice = createAppSlice({
           state.status = "loading";
         },
         fulfilled: (state, action) => {
-          state.status = "idle";
+          state.status = "created";
           state.users = [action.payload.data, ...(state.users || [])];
           state.count = state.count || 0 + 1;
         },
@@ -77,6 +77,7 @@ export const usersSlice = createAppSlice({
   selectors: {
     selectUsers: (Users) => Users.users || [],
     selectUsersCount: (Users) => Users.count || 0,
+    selectStatus: (Users) => Users.status || "idle",
   },
 });
 
@@ -85,4 +86,5 @@ export const { setUsersAsync, updateUser, createUserAsync } =
   usersSlice.actions;
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
-export const { selectUsers, selectUsersCount } = usersSlice.selectors;
+export const { selectUsers, selectUsersCount, selectStatus } =
+  usersSlice.selectors;

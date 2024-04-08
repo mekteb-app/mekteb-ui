@@ -1,11 +1,9 @@
 import AppDatePicker from "@/components/FormElements/DatePicker/DatePicker";
-import DatePickerOne from "@/components/FormElements/DatePicker/DatePickerOne";
 import FormItemError from "@/components/FormElements/FormItemError";
 import CreateUserIcon from "@/components/Icons/create-user";
 import AppModal from "@/components/Modal";
-import { IUser } from "@/interfaces/IUser";
 import { IUserPayload } from "@/interfaces/IUserPayload";
-import { useAppDispatch } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { IChildPayload } from "../../../interfaces/IChildPayload";
@@ -13,7 +11,7 @@ import { Nivo } from "@/enums/nivo";
 import TrashCanIcon from "@/components/Icons/trash-can.icon";
 import AppSelect from "@/components/FormElements/Select";
 import { subYears } from "date-fns";
-import { createUserAsync } from "@/lib/features/users/usersSlice";
+import { createUserAsync, selectStatus } from "@/lib/features/users/usersSlice";
 
 const initialChild: IChildPayload = {
   first_name: "",
@@ -24,6 +22,7 @@ const initialChild: IChildPayload = {
 
 const UserForm: React.FC = () => {
   const dispatch = useAppDispatch();
+  const status = useAppSelector(selectStatus);
 
   const [open, setOpen] = useState(false);
 
@@ -55,7 +54,6 @@ const UserForm: React.FC = () => {
   });
 
   const onSubmit = (data: IUserPayload) => {
-    console.log("SUBMIT USER DATA =>", data);
     dispatch(createUserAsync(data));
   };
 
@@ -64,6 +62,12 @@ const UserForm: React.FC = () => {
       reset({});
     }
   }, [open, reset]);
+
+  useEffect(() => {
+    if (status === "created") {
+      onCloseModal();
+    }
+  }, [status]);
 
   return (
     <>
