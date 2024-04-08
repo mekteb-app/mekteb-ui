@@ -1,12 +1,13 @@
 import { createAppSlice } from "@/lib/createAppSlice";
-import { login } from "./authAPI";
+import { login, verify } from "./authAPI";
 import { IAuthUser } from "@/interfaces/IAuthUser";
 import { ILoginPayload } from "@/interfaces/ILoginPayload";
 import { SESSION_TOKEN } from "@/constants";
+import { IVerifyUser } from "@/interfaces/IVerifyUser";
 
 export interface AuthSliceState {
   currentUser?: IAuthUser;
-  status: "idle" | "loading" | "failed";
+  status: "idle" | "loading" | "failed" | "verified";
 }
 
 const initialState: AuthSliceState = {
@@ -41,6 +42,25 @@ export const authSlice = createAppSlice({
         },
       }
     ),
+    // Fetch access token and current user details from the API and set them in the state
+    setVerifyUserAsync: create.asyncThunk(
+      async (data: IVerifyUser) => {
+        const response = await verify(data);
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+        },
+        fulfilled: (state) => {
+          state.status = "verified";
+        },
+        rejected: (state) => {
+          state.status = "failed";
+        },
+      }
+    ),
   }),
   // Selectors
   selectors: {
@@ -50,7 +70,7 @@ export const authSlice = createAppSlice({
 });
 
 // Action creators are generated for each case reducer function.
-export const { setCurrentUserAsync } = authSlice.actions;
+export const { setCurrentUserAsync, setVerifyUserAsync } = authSlice.actions;
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
 export const { selectCurrentUser, selectStatus } = authSlice.selectors;
