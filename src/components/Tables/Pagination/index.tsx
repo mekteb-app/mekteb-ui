@@ -24,7 +24,7 @@ const Pagination: React.FC<IPaginationProps> = ({
         renderOnZeroPageCount={null}
         containerClassName={"pagination"}
         pageClassName={"page-item"}
-        activeClassName={"active"}
+        activeClassName={"active-page"}
         disableInitialCallback={true}
       />
     </div>

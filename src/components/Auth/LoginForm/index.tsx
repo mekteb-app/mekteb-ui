@@ -11,6 +11,7 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import FormItemError from "@/components/FormElements/FormItemError";
+import { SESSION_TOKEN } from "@/constants";
 
 const LoginForm: React.FC = () => {
   const {
@@ -30,6 +31,8 @@ const LoginForm: React.FC = () => {
 
   useEffect(() => {
     if (status === "idle" && currentUser?.id) {
+      // Set the access token to the local storage
+      localStorage.setItem(SESSION_TOKEN, currentUser.accessToken ?? "");
       router.push("/"); // Redirect to the dashboard page.
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

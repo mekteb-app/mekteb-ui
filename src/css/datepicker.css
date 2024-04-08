@@ -1,0 +1,25 @@
+.react-datepicker-wrapper {
+  display: inherit;
+}
+
+.react-datepicker__day {
+  width: 2rem;
+}
+
+.react-datepicker__day.react-datepicker__day--selected {
+  border: 1px solid rgb(0 121 67 / var(--tw-text-opacity));
+  background: transparent;
+  color: black;
+}
+
+.datepicker-day {
+  border: none;
+}
+
+.react-datepicker__view-calendar-icon input {
+  padding: 0.75rem 1.25rem 0.75rem 2.5rem;
+}
+
+.react-datepicker__input-container .react-datepicker__calendar-icon {
+  padding: 1rem 1rem 0.5rem;
+}
