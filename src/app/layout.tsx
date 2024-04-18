@@ -6,6 +6,8 @@ import { ReactNode, memo, useMemo, useState } from "react";
 import Head from "next/head";
 import { StoreProvider } from "./StoreProvider";
 import SessionProvider from "../components/lib/JWTSessionProvider";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Props {
   readonly children: ReactNode;
@@ -30,6 +32,7 @@ const RootLayout = ({ children }: Props) => {
             <div className="dark:bg-boxdark-2 dark:text-bodydark">
               {memoizedChildren}
             </div>
+            <ToastContainer position="bottom-right" />
           </body>
         </html>
       </StoreProvider>

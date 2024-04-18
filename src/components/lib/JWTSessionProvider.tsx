@@ -2,6 +2,7 @@
 import { SESSION_TOKEN } from "@/constants";
 import { getCurrentUser } from "@/lib/features/currentUser/currentUserAPI";
 import React from "react";
+import { toast } from "react-toastify";
 
 // Create context.
 interface SessionContextType {
@@ -44,7 +45,7 @@ export default function JWTSessionProvider({
           const decodedToken = await getCurrentUser();
           setDecodedSession(decodedToken);
         } catch (error) {
-          console.error("Token verification failed:", error);
+          toast.error("Failed to fetch current user");
         }
       }
     }

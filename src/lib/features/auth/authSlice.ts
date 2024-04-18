@@ -4,6 +4,7 @@ import { IAuthUser } from "@/interfaces/IAuthUser";
 import { ILoginPayload } from "@/interfaces/ILoginPayload";
 import { SESSION_TOKEN } from "@/constants";
 import { IVerifyUser } from "@/interfaces/IVerifyUser";
+import { toast } from "react-toastify";
 
 export interface AuthSliceState {
   currentUser?: IAuthUser;
@@ -37,8 +38,9 @@ export const authSlice = createAppSlice({
           state.status = "idle";
           state.currentUser = action.payload.data || null;
         },
-        rejected: (state) => {
+        rejected: (state, action) => {
           state.status = "failed";
+          toast.error(action.error.message);
         },
       }
     ),
@@ -55,9 +57,11 @@ export const authSlice = createAppSlice({
         },
         fulfilled: (state) => {
           state.status = "verified";
+          toast.success("User verified successfully");
         },
-        rejected: (state) => {
+        rejected: (state, action) => {
           state.status = "failed";
+          toast.error(action.error.message);
         },
       }
     ),

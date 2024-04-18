@@ -1,5 +1,7 @@
 "use client";
 import {
+  resetError,
+  selectUserError,
   selectUsers,
   selectUsersCount,
   setUsersAsync,
@@ -11,20 +13,41 @@ import ProtectedLayout from "../Layouts/ProtectedLayout";
 import { formatDate } from "@/utils/date";
 import Pagination from "../Tables/Pagination";
 import UserForm from "./UserForm";
+import useErrorHandling from "@/hooks/useErrorHandling";
 
 const Users: React.FC = () => {
   const dispatch = useAppDispatch();
+  const { setError } = useErrorHandling();
   const users = useAppSelector(selectUsers) || [];
   const usersCount = useAppSelector(selectUsersCount);
+  const error = useAppSelector(selectUserError);
 
   const onPageChange = (selected = 0) => {
-    dispatch(setUsersAsync(selected));
+    fetchData(selected);
+  };
+
+  const fetchData = async (page = 0) => {
+    try {
+      await dispatch(setUsersAsync(page));
+    } catch (error) {
+      setError(error as any);
+    }
   };
 
   useEffect(() => {
-    dispatch(setUsersAsync(0));
+    fetchData(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (error) {
+      setError(error);
+    }
+
+    dispatch(resetError());
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
 
   return (
     <ProtectedLayout pageName="Users">

@@ -2,6 +2,7 @@ import { baseApiCall, baseApiCallBody } from "@/lib/baseApiCall";
 import { IPagination } from "@/interfaces/IPagination";
 import { IUser } from "@/interfaces/IUser";
 import { IUserPayload } from "@/interfaces/IUserPayload";
+import CustomError from "@/types/custom-error";
 
 interface IUsersResponse {
   data: IUser[];
@@ -24,6 +25,11 @@ export const fetchUsers = async ({ page, count }: IPagination) => {
   );
   const result: IUsersResponse = await response.json();
 
+  if (response.status !== 200) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
+
   return result;
 };
 
@@ -36,7 +42,10 @@ export const createUser = async (data: IUserPayload) => {
   );
   const result: IUserResponse = await response.json();
 
-  if (response.status !== 201) throw new Error(result.message);
+  if (response.status !== 201) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
 
   return result;
 };
