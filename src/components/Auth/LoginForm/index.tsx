@@ -1,17 +1,18 @@
 "use client";
 import { ILoginPayload } from "@/interfaces/ILoginPayload";
-import {
-  selectCurrentUser,
-  selectStatus,
-  setCurrentUserAsync,
-} from "@/lib/features/auth/authSlice";
+import { useLoginMutation } from "@/lib/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import FormItemError from "@/components/FormElements/FormItemError";
 import { SESSION_TOKEN } from "@/constants";
+import {
+  selectCurrentUser,
+  setCurrentUserAsync,
+} from "@/lib/features/currentUser/currentUserSlice";
+import useErrorHandling from "@/hooks/useErrorHandling";
 
 const LoginForm: React.FC = () => {
   const {
@@ -21,22 +22,27 @@ const LoginForm: React.FC = () => {
   } = useForm<ILoginPayload>();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { setError } = useErrorHandling();
 
-  const status = useAppSelector(selectStatus);
+  const [login, { isLoading }] = useLoginMutation();
+
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const onSubmit = (data: ILoginPayload) => {
-    dispatch(setCurrentUserAsync(data));
-  };
+  const onSubmit = async (data: ILoginPayload) => {
+    try {
+      const { data: result } = await login(data).unwrap();
 
-  useEffect(() => {
-    if (status === "idle" && currentUser?.id) {
       // Set the access token to the local storage
-      localStorage.setItem(SESSION_TOKEN, currentUser.accessToken ?? "");
+      localStorage.setItem(SESSION_TOKEN, result?.accessToken ?? "");
+
+      dispatch(setCurrentUserAsync(null));
+
       router.push("/"); // Redirect to the dashboard page.
+    } catch (error: any) {
+      const { data = {} } = error;
+      setError(data);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, currentUser?.id]);
+  };
 
   return (
     <>
@@ -120,7 +126,7 @@ const LoginForm: React.FC = () => {
               className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
               type="submit"
             >
-              {status === "loading" ? (
+              {isLoading ? (
                 <div className="h-6 w-6 animate-spin rounded-full border-4 border-solid border-secondary border-t-transparent mr-2"></div>
               ) : (
                 <></>

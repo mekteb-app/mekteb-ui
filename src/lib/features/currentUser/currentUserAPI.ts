@@ -3,7 +3,7 @@ import { baseApiCall } from "@/lib/baseApiCall";
 // A function to get current user details
 export const getCurrentUser = async () => {
   const response = await baseApiCall(
-    `${process.env.NEXT_PUBLIC_API_URL}/whoami`,
+    `${process.env.NEXT_PUBLIC_API_URL}/current-user`,
     "GET"
   );
 

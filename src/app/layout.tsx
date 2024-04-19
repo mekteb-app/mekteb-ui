@@ -19,8 +19,8 @@ const RootLayout = ({ children }: Props) => {
   const memoizedChildren = useMemo(() => children, [children]);
 
   return (
-    <SessionProvider>
-      <StoreProvider>
+    <StoreProvider>
+      <SessionProvider>
         <html lang="en">
           <Head>
             <link rel="icon" href="./favicon.ico" />
@@ -35,8 +35,8 @@ const RootLayout = ({ children }: Props) => {
             <ToastContainer position="bottom-right" />
           </body>
         </html>
-      </StoreProvider>
-    </SessionProvider>
+      </SessionProvider>
+    </StoreProvider>
   );
 };
 export default memo(RootLayout);

@@ -1,6 +1,7 @@
 "use client";
 import { SESSION_TOKEN } from "@/constants";
-import { getCurrentUser } from "@/lib/features/currentUser/currentUserAPI";
+import { setCurrentUserAsync } from "@/lib/features/currentUser/currentUserSlice";
+import { useAppDispatch } from "@/lib/hooks";
 import React from "react";
 import { toast } from "react-toastify";
 
@@ -29,6 +30,8 @@ export default function JWTSessionProvider({
     return {};
   };
 
+  const dispatch = useAppDispatch();
+
   const [decodedSession, setDecodedSession] =
     React.useState<Record<string, unknown>>(initailState());
 
@@ -40,16 +43,11 @@ export default function JWTSessionProvider({
       if (!sessionToken) {
         setDecodedSession({}); // No token, hence set to an empty object!
       } else {
-        // Verify token.
-        try {
-          const decodedToken = await getCurrentUser();
-          setDecodedSession(decodedToken);
-        } catch (error) {
-          toast.error("Failed to fetch current user");
-        }
+        dispatch(setCurrentUserAsync(null));
       }
     }
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
