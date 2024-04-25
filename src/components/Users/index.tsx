@@ -14,6 +14,8 @@ import { formatDate } from "@/utils/date";
 import Pagination from "../Tables/Pagination";
 import UserForm from "./UserForm";
 import useErrorHandling from "@/hooks/useErrorHandling";
+import { selectCurrentUser } from "@/lib/features/currentUser/currentUserSlice";
+import { Role } from "@/enums/role";
 
 const Users: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -21,6 +23,7 @@ const Users: React.FC = () => {
   const users = useAppSelector(selectUsers) || [];
   const usersCount = useAppSelector(selectUsersCount);
   const error = useAppSelector(selectUserError);
+  const currentUser = useAppSelector(selectCurrentUser);
 
   const onPageChange = (selected = 0) => {
     fetchData(selected);
@@ -73,7 +76,14 @@ const Users: React.FC = () => {
                 </th>
                 <th className="px-4 py-2 font-medium text-black">Email</th>
                 <th className="px-4 py-2 font-medium text-black ">Phone</th>
-                <th className="px-4 py-2 font-medium text-black ">Community</th>
+                {currentUser?.role === Role.SuperAdmin && (
+                  <th className="px-4 py-2 font-medium text-black ">
+                    Community
+                  </th>
+                )}
+                {currentUser?.role === Role.SuperAdmin && (
+                  <th className="px-4 py-2 font-medium text-black ">Role</th>
+                )}
                 <th className="px-4 py-2 font-medium text-black ">
                   Last updated date
                 </th>
@@ -99,11 +109,21 @@ const Users: React.FC = () => {
                     <p className="text-black font-medium">{user.phone}</p>
                   </td>
                   {/* Community */}
-                  <td className="border-b border-[#eee] px-4 py-2">
-                    <p className="text-black font-medium">
-                      {user.community?.name || "N/A"}
-                    </p>
-                  </td>
+                  {currentUser?.role === Role.SuperAdmin && (
+                    <td className="border-b border-[#eee] px-4 py-2">
+                      <p className="text-black font-medium">
+                        {user.community?.name || "N/A"}
+                      </p>
+                    </td>
+                  )}
+                  {/* Role */}
+                  {currentUser?.role === Role.SuperAdmin && (
+                    <td className="border-b border-[#eee] px-4 py-2">
+                      <p className="text-black font-medium">
+                        {user.role || "N/A"}
+                      </p>
+                    </td>
+                  )}
                   {/* Created and updated dates */}
                   <td className="min-w-[150px] border-b border-[#eee] px-4 py-2">
                     <p className="text-black font-medium">
