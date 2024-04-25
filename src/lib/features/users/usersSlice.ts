@@ -1,13 +1,15 @@
 import { createAppSlice } from "@/lib/createAppSlice";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createUser, fetchUsers } from "./usersAPI";
+import { createUser, fetchUserOptions, fetchUsers } from "./usersAPI";
 import { IUser } from "@/interfaces/IUser";
 import { IUserPayload } from "@/interfaces/IUserPayload";
 import { toast } from "react-toastify";
 import { IError } from "@/interfaces/IError";
+import { IUserOption } from "@/interfaces/IUserOption";
 
 export interface UsersSliceState {
   users: IUser[];
+  userOptions: IUserOption[];
   status: "idle" | "loading" | "failed" | "created";
   count: number;
   error: any;
@@ -15,6 +17,7 @@ export interface UsersSliceState {
 
 const initialState: UsersSliceState = {
   users: [],
+  userOptions: [],
   status: "idle",
   count: 0,
   error: undefined,
@@ -58,6 +61,25 @@ export const usersSlice = createAppSlice({
         },
       }
     ),
+    setUserOptionsAsync: create.asyncThunk(
+      async () => {
+        const response = await fetchUserOptions();
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.error = undefined;
+        },
+        fulfilled: (state, action) => {
+          state.error = undefined;
+          state.userOptions = action.payload.data || [];
+        },
+        rejected: (state, action) => {
+          state.error = action.error;
+        },
+      }
+    ),
     createUserAsync: create.asyncThunk(
       async (data: IUserPayload) => {
         const response = await createUser(data);
@@ -84,10 +106,19 @@ export const usersSlice = createAppSlice({
     resetError: create.reducer((state) => {
       state.error = undefined;
     }),
+
+    resetUsersState: create.reducer((state) => {
+      state.users = [];
+      state.userOptions = [];
+      state.status = "idle";
+      state.count = 0;
+      state.error = undefined;
+    }),
   }),
   // Selectors
   selectors: {
     selectUsers: (Users) => Users.users || [],
+    selectUserOptions: (Users) => Users.userOptions || [],
     selectUsersCount: (Users) => Users.count || 0,
     selectStatus: (Users) => Users.status || "idle",
     selectUserError: (Users) => Users.error || undefined,
@@ -95,9 +126,20 @@ export const usersSlice = createAppSlice({
 });
 
 // Action creators are generated for each case reducer function.
-export const { setUsersAsync, updateUser, createUserAsync, resetError } =
-  usersSlice.actions;
+export const {
+  setUsersAsync,
+  setUserOptionsAsync,
+  updateUser,
+  createUserAsync,
+  resetError,
+  resetUsersState,
+} = usersSlice.actions;
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
-export const { selectUsers, selectUsersCount, selectStatus, selectUserError } =
-  usersSlice.selectors;
+export const {
+  selectUsers,
+  selectUsersCount,
+  selectStatus,
+  selectUserError,
+  selectUserOptions,
+} = usersSlice.selectors;
