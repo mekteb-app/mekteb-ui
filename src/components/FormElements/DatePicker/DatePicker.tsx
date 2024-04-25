@@ -8,9 +8,10 @@ interface IDatePickerProps {
   onChange?: (date: string) => void;
   name: string;
   maxDate?: Date;
+  minDate?: Date;
 }
 
-const AppDatePicker = forwardRef((props: IDatePickerProps, ref) => {
+const AppDatePicker = forwardRef((props: IDatePickerProps, _ref) => {
   const [startDate, setStartDate] = useState<Date>();
   return (
     <DatePicker
@@ -27,6 +28,7 @@ const AppDatePicker = forwardRef((props: IDatePickerProps, ref) => {
         return <span className="datepicker-day p-2">{day}</span>;
       }}
       maxDate={props.maxDate}
+      minDate={props.minDate}
       showYearDropdown
       showIcon
       fixedHeight
