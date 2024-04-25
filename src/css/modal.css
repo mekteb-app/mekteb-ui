@@ -2,3 +2,12 @@
   width: 90%;
   margin: 1rem 0;
 }
+
+div.react-responsive-modal-modal {
+  overflow: initial;
+}
+
+div.app-modal-content {
+  max-height: fit-content;
+  overflow-y: auto;
+}
