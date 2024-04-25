@@ -5,9 +5,14 @@ import ProtectedLayout from "../Layouts/ProtectedLayout";
 import { formatDate } from "@/utils/date";
 import Pagination from "../Tables/Pagination";
 import useChildren from "@/hooks/useChildren";
+import ChildForm from "./ChildForm";
+import { useAppSelector } from "@/lib/hooks";
+import { selectCurrentUser } from "@/lib/features/currentUser/currentUserSlice";
+import { Role } from "@/enums/role";
 
 const Children: React.FC = () => {
-  const [children, count, getChildren] = useChildren();
+  const currentUser = useAppSelector(selectCurrentUser);
+  const { children, count, getChildren } = useChildren();
 
   useEffect(() => {
     getChildren(0);
@@ -17,7 +22,18 @@ const Children: React.FC = () => {
   return (
     <ProtectedLayout pageName="Children">
       <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default sm:px-7.5 lg:pb-1">
-        <div className="flex justify-between"></div>
+        <div className="flex justify-between">
+          <div className="flex items-center gap-2 max-w-[300px] sm:w-1/2">
+            <input
+              type="text"
+              placeholder="Default Input"
+              className="text-sm w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-3 py-2 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter"
+            />
+          </div>
+          <div className="flex">
+            <ChildForm />
+          </div>
+        </div>
         <div className="max-w-full overflow-x-auto mt-4">
           <table className="w-full table-auto text-sm">
             <thead>
@@ -27,7 +43,11 @@ const Children: React.FC = () => {
                 </th>
                 <th className="px-4 py-2 font-medium text-black">Nivo</th>
                 <th className="px-4 py-2 font-medium text-black ">Birthdate</th>
-                <th className="px-4 py-2 font-medium text-black ">Community</th>
+                {currentUser?.role === Role.SuperAdmin && (
+                  <th className="px-4 py-2 font-medium text-black ">
+                    Community
+                  </th>
+                )}
                 <th className="px-4 py-2 font-medium text-black ">
                   Last updated date
                 </th>
@@ -55,11 +75,13 @@ const Children: React.FC = () => {
                     </p>
                   </td>
                   {/* Community */}
-                  <td className="border-b border-[#eee] px-4 py-2">
-                    <p className="text-black font-medium">
-                      {child.community?.name || "N/A"}
-                    </p>
-                  </td>
+                  {currentUser?.role === Role.SuperAdmin && (
+                    <td className="border-b border-[#eee] px-4 py-2">
+                      <p className="text-black font-medium">
+                        {child.community?.name || "N/A"}
+                      </p>
+                    </td>
+                  )}
                   {/* Created and updated dates */}
                   <td className="min-w-[150px] border-b border-[#eee] px-4 py-2">
                     <p className="text-black font-medium">

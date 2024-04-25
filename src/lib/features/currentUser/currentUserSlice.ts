@@ -43,6 +43,7 @@ export const currentUserSlice = createAppSlice({
     ),
     clearCurrentUser: create.reducer((state) => {
       state.currentUser = undefined;
+      state.status = "idle";
     }),
   }),
   // Selectors

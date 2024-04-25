@@ -4,5 +4,7 @@ export interface IChildPayload {
   first_name: string;
   last_name: string;
   birthdate: string;
-  nivo: Nivo;
+  nivo: Nivo | undefined;
+  parentIds?: string[];
+  communityId?: string;
 }

@@ -6,14 +6,15 @@ import {
   setError,
 } from "@/lib/features/error/errorSlice";
 import { useAppDispatch } from "@/lib/hooks";
-import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import useAuth from "./useAuth";
 
 const useErrorHandling = () => {
   const dispatch = useAppDispatch();
   const error = useSelector(selectError);
+  const [logout] = useAuth();
 
   const isValidJSON = (str: string): boolean => {
     try {
@@ -40,13 +41,13 @@ const useErrorHandling = () => {
         // Handle 401 error
         localStorage.removeItem(SESSION_TOKEN);
         toast.error("Session expired, please login again");
-        dispatch(clearError());
-        return redirect(`/auth/signin`);
+        return logout();
       }
       toast.error(message);
       dispatch(clearError());
     }
-  }, [error, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
 
   return {
     setError: (error: IError) => dispatch(setError(error)),
