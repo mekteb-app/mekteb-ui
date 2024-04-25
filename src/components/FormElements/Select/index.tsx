@@ -5,10 +5,11 @@ interface IAppSelectProps {
   onChange: (value: string) => void;
   options: { value: string | number; label: string }[];
   placeholder?: string;
+  formatValue?: (val: string) => any;
 }
 
 const AppSelect: React.FC<IAppSelectProps> = forwardRef(
-  ({ onChange, options = [], placeholder }) => {
+  ({ onChange, options = [], placeholder, formatValue }, _ref) => {
     const [selectedOption, setSelectedOption] = useState<string>("");
     const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
 
@@ -23,7 +24,9 @@ const AppSelect: React.FC<IAppSelectProps> = forwardRef(
           onChange={(e) => {
             setSelectedOption(e.target.value);
             changeTextColor();
-            onChange(e.target.value);
+            onChange(
+              formatValue ? formatValue(e.target.value) : e.target.value
+            );
           }}
           className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent px-5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${
             isOptionSelected ? "text-black dark:text-white" : ""
