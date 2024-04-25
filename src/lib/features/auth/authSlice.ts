@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { IAuthUser } from "@/interfaces/IAuthUser";
 import { ILoginPayload } from "@/interfaces/ILoginPayload";
+import { IVerifyUser } from "@/interfaces/IVerifyUser";
 
 export const authApiSlice = createApi({
   baseQuery: fetchBaseQuery({
@@ -20,8 +21,18 @@ export const authApiSlice = createApi({
         body: loginCredentials,
       }),
     }),
+    verifyUser: build.mutation<
+      { message: string; status: number },
+      IVerifyUser
+    >({
+      query: (verifyCredentials) => ({
+        url: "/verify-user",
+        method: "POST",
+        body: verifyCredentials,
+      }),
+    }),
   }),
 });
 
 // Exporting the `login` endpoint directly
-export const { useLoginMutation } = authApiSlice;
+export const { useLoginMutation, useVerifyUserMutation } = authApiSlice;

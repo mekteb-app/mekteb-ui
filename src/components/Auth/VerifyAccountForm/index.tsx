@@ -1,21 +1,18 @@
 "use client";
 import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation"; // Import useRouter from next/navigation
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import {
-  selectStatus,
-  setVerifyUserAsync,
-} from "@/lib/features/auth/authSlice";
+import { useVerifyUserMutation } from "@/lib/features/auth/authSlice";
 import { IVerifyUser } from "@/interfaces/IVerifyUser";
 import { SubmitHandler, useForm } from "react-hook-form";
 import FormItemError from "@/components/FormElements/FormItemError";
+import useErrorHandling from "@/hooks/useErrorHandling";
+import { toast } from "react-toastify";
 
 const VerifyAccountForm: React.FC = () => {
   const routeParams = useParams();
   const router = useRouter();
-  const dispatch = useAppDispatch();
-
-  const status = useAppSelector(selectStatus);
+  const { setError } = useErrorHandling();
+  const [verifyUser, { isLoading, isSuccess }] = useVerifyUserMutation();
 
   const token = routeParams.token as string;
 
@@ -26,9 +23,15 @@ const VerifyAccountForm: React.FC = () => {
     watch,
   } = useForm<IVerifyUser>();
 
-  const onSubmit: SubmitHandler<IVerifyUser> = (data) => {
+  const onSubmit: SubmitHandler<IVerifyUser> = async (data) => {
     if (isValid) {
-      dispatch(setVerifyUserAsync({ ...data, token }));
+      try {
+        const { message } = await verifyUser({ ...data, token }).unwrap();
+        toast.success(message);
+      } catch (error: any) {
+        const { data = {} } = error;
+        setError(data);
+      }
     }
   };
 
@@ -36,11 +39,11 @@ const VerifyAccountForm: React.FC = () => {
   const watchConfirmPassword = watch("password", "");
 
   useEffect(() => {
-    if (status === "verified") {
+    if (isSuccess && !isLoading) {
       router.push("/auth/signin"); // Redirect to the login page.
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  }, [isSuccess]);
 
   return (
     <>
