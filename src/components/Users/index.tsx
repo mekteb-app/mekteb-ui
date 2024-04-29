@@ -16,6 +16,8 @@ import UserForm from "./UserForm";
 import useErrorHandling from "@/hooks/useErrorHandling";
 import { selectCurrentUser } from "@/lib/features/currentUser/currentUserSlice";
 import { Role } from "@/enums/role";
+import { Entity } from "@/enums/entity";
+import useQuickview from "@/hooks/useQuickview";
 
 const Users: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -24,6 +26,8 @@ const Users: React.FC = () => {
   const usersCount = useAppSelector(selectUsersCount);
   const error = useAppSelector(selectUserError);
   const currentUser = useAppSelector(selectCurrentUser);
+
+  const { onOpenQuickview } = useQuickview();
 
   const onPageChange = (selected = 0) => {
     fetchData(selected);
@@ -138,7 +142,10 @@ const Users: React.FC = () => {
                   </td>
                   <td className="border-b border-[#eee] px-4 py-2">
                     <div className="flex items-center space-x-3.5">
-                      <button className="hover:text-primary">
+                      <button
+                        className="hover:text-primary"
+                        onClick={() => onOpenQuickview(Entity.User, user.id)}
+                      >
                         <svg
                           className="fill-current"
                           width="18"

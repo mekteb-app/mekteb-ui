@@ -3,7 +3,7 @@ import { ICommunity } from "./ICommunity";
 import { IChild } from "./IChild";
 
 export interface IUser {
-  id: number;
+  id: string;
   first_name: string;
   last_name: string;
   email: string;

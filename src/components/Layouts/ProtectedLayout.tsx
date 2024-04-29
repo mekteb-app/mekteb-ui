@@ -3,6 +3,7 @@ import React, { useState, ReactNode } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
+import Quickview from "../Quickview";
 
 interface ProtectedLayoutProps {
   children: ReactNode;
@@ -40,6 +41,7 @@ export default function ProtectedLayout({
         </div>
         {/* <!-- ===== Content Area End ===== --> */}
       </div>
+      <Quickview />
       {/* <!-- ===== Page Wrapper End ===== --> */}
     </>
   );
