@@ -15,9 +15,10 @@ import Pagination from "../Tables/Pagination";
 import UserForm from "./UserForm";
 import useErrorHandling from "@/hooks/useErrorHandling";
 import { selectCurrentUser } from "@/lib/features/currentUser/currentUserSlice";
-import { Role } from "@/enums/role";
+import { Role as RoleEnum } from "@/enums/role";
 import { Entity } from "@/enums/entity";
 import useQuickview from "@/hooks/useQuickview";
+import Role from "@/components/common/Role";
 
 const Users: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -80,12 +81,12 @@ const Users: React.FC = () => {
                 </th>
                 <th className="px-4 py-2 font-medium text-black">Email</th>
                 <th className="px-4 py-2 font-medium text-black ">Phone</th>
-                {currentUser?.role === Role.SuperAdmin && (
+                {currentUser?.role === RoleEnum.SuperAdmin && (
                   <th className="px-4 py-2 font-medium text-black ">
                     Community
                   </th>
                 )}
-                {currentUser?.role === Role.SuperAdmin && (
+                {currentUser?.role === RoleEnum.SuperAdmin && (
                   <th className="px-4 py-2 font-medium text-black ">Role</th>
                 )}
                 <th className="px-4 py-2 font-medium text-black ">
@@ -100,20 +101,28 @@ const Users: React.FC = () => {
                 <tr key={key}>
                   {/* Name */}
                   <td className="min-w-[120px] border-b border-[#eee] px-4 py-2 pl-4 xl:pl-8">
-                    <h5 className="font-medium text-black font-medium">
+                    <h5
+                      className="font-medium text-black font-medium cursor-pointer hover:text-primary"
+                      onClick={() => onOpenQuickview(Entity.User, user.id)}
+                    >
                       {`${user.first_name} ${user.last_name}`}
                     </h5>
                   </td>
                   {/* Email */}
                   <td className="min-w-[150px] border-b border-[#eee] px-4 py-2">
-                    <p className="text-black font-medium">{user.email}</p>
+                    <p
+                      className="text-black font-medium cursor-pointer hover:text-primary"
+                      onClick={() => onOpenQuickview(Entity.User, user.id)}
+                    >
+                      {user.email}
+                    </p>
                   </td>
                   {/* Phone */}
                   <td className="border-b border-[#eee] px-4 py-2">
                     <p className="text-black font-medium">{user.phone}</p>
                   </td>
                   {/* Community */}
-                  {currentUser?.role === Role.SuperAdmin && (
+                  {currentUser?.role === RoleEnum.SuperAdmin && (
                     <td className="border-b border-[#eee] px-4 py-2">
                       <p className="text-black font-medium">
                         {user.community?.name || "N/A"}
@@ -121,11 +130,9 @@ const Users: React.FC = () => {
                     </td>
                   )}
                   {/* Role */}
-                  {currentUser?.role === Role.SuperAdmin && (
+                  {currentUser?.role === RoleEnum.SuperAdmin && (
                     <td className="border-b border-[#eee] px-4 py-2">
-                      <p className="text-black font-medium">
-                        {user.role || "N/A"}
-                      </p>
+                      <Role role={user.role} />
                     </td>
                   )}
                   {/* Created and updated dates */}
@@ -142,10 +149,7 @@ const Users: React.FC = () => {
                   </td>
                   <td className="border-b border-[#eee] px-4 py-2">
                     <div className="flex items-center space-x-3.5">
-                      <button
-                        className="hover:text-primary"
-                        onClick={() => onOpenQuickview(Entity.User, user.id)}
-                      >
+                      <button className="hover:text-primary">
                         <svg
                           className="fill-current"
                           width="18"

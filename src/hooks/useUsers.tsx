@@ -4,17 +4,34 @@ import useErrorHandling from "./useErrorHandling";
 import { IUserOption } from "@/interfaces/IUserOption";
 import {
   resetError,
+  selectUser,
   selectUserError,
   selectUserOptions,
+  setUserDetailsAsync,
   setUserOptionsAsync,
 } from "@/lib/features/users/usersSlice";
+import { IUser } from "@/interfaces/IUser";
 
-const useUsers = (): [IUserOption[], () => Promise<void>] => {
+const useUsers = (): {
+  userOptions: IUserOption[];
+  user: IUser | any;
+  getUserOptions: () => Promise<void>;
+  getUserDetails: (id: string) => Promise<void>;
+} => {
   const dispatch = useAppDispatch();
   const { setError } = useErrorHandling();
 
   const error = useAppSelector(selectUserError);
   const userOptions = useAppSelector(selectUserOptions);
+  const user = useAppSelector(selectUser) || {};
+
+  const getUserDetails = async (id: string) => {
+    try {
+      await dispatch(setUserDetailsAsync(id));
+    } catch (error) {
+      setError(error as any);
+    }
+  };
 
   const getUserOptions = async () => {
     try {
@@ -34,7 +51,7 @@ const useUsers = (): [IUserOption[], () => Promise<void>] => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
-  return [userOptions, getUserOptions];
+  return { userOptions, user, getUserOptions, getUserDetails };
 };
 
 export default useUsers;

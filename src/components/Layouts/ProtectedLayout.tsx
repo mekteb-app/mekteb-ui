@@ -4,6 +4,8 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import Quickview from "../Quickview";
+import "react-tabs/style/react-tabs.css";
+import "@/css/tabs.css";
 
 interface ProtectedLayoutProps {
   children: ReactNode;

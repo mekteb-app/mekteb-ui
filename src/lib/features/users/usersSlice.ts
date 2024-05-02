@@ -1,6 +1,11 @@
 import { createAppSlice } from "@/lib/createAppSlice";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createUser, fetchUserOptions, fetchUsers } from "./usersAPI";
+import {
+  createUser,
+  fetchUserDetails,
+  fetchUserOptions,
+  fetchUsers,
+} from "./usersAPI";
 import { IUser } from "@/interfaces/IUser";
 import { IUserPayload } from "@/interfaces/IUserPayload";
 import { toast } from "react-toastify";
@@ -10,6 +15,7 @@ import { IUserOption } from "@/interfaces/IUserOption";
 export interface UsersSliceState {
   users: IUser[];
   userOptions: IUserOption[];
+  user: IUser | undefined;
   status: "idle" | "loading" | "failed" | "created";
   count: number;
   error: any;
@@ -18,6 +24,7 @@ export interface UsersSliceState {
 const initialState: UsersSliceState = {
   users: [],
   userOptions: [],
+  user: undefined,
   status: "idle",
   count: 0,
   error: undefined,
@@ -103,6 +110,26 @@ export const usersSlice = createAppSlice({
         },
       }
     ),
+    setUserDetailsAsync: create.asyncThunk(
+      async (id: string) => {
+        const response = await fetchUserDetails(id);
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.status = "idle";
+          state.user = action.payload.data || undefined;
+        },
+        rejected: (state, action) => {
+          state.status = "failed";
+          state.error = action.error as IError;
+        },
+      }
+    ),
     resetError: create.reducer((state) => {
       state.error = undefined;
     }),
@@ -110,6 +137,7 @@ export const usersSlice = createAppSlice({
     resetUsersState: create.reducer((state) => {
       state.users = [];
       state.userOptions = [];
+      state.user = undefined;
       state.status = "idle";
       state.count = 0;
       state.error = undefined;
@@ -119,6 +147,7 @@ export const usersSlice = createAppSlice({
   selectors: {
     selectUsers: (Users) => Users.users || [],
     selectUserOptions: (Users) => Users.userOptions || [],
+    selectUser: (Users) => Users.user || undefined,
     selectUsersCount: (Users) => Users.count || 0,
     selectStatus: (Users) => Users.status || "idle",
     selectUserError: (Users) => Users.error || undefined,
@@ -129,6 +158,7 @@ export const usersSlice = createAppSlice({
 export const {
   setUsersAsync,
   setUserOptionsAsync,
+  setUserDetailsAsync,
   updateUser,
   createUserAsync,
   resetError,
@@ -138,6 +168,7 @@ export const {
 // Selectors returned by `slice.selectors` take the root state as their first argument.
 export const {
   selectUsers,
+  selectUser,
   selectUsersCount,
   selectStatus,
   selectUserError,

@@ -72,3 +72,18 @@ export const createUser = async (data: IUserPayload) => {
 
   return result;
 };
+
+export const fetchUserDetails = async (id: string) => {
+  const response = await baseApiCall(
+    `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
+    "GET"
+  );
+  const result: IUserResponse = await response.json();
+
+  if (response.status !== 200) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
+
+  return result;
+};

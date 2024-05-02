@@ -1,11 +1,23 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import useQuickview from "@/hooks/useQuickview";
 import "@/css/quickview.css";
+import { Entity } from "@/enums/entity";
+import UserQuickview from "../Users/Quickview";
+import useUsers from "@/hooks/useUsers";
 
 const Quickview: React.FC = () => {
   const { quickviews, onCloseQuickViews } = useQuickview();
-  const lastQuickView = quickviews[quickviews.length - 1];
+  const lastQuickView = quickviews[quickviews.length - 1] || {};
+
+  const { getUserDetails, user } = useUsers();
+
+  useEffect(() => {
+    if (lastQuickView?.id && lastQuickView?.id !== user.id)
+      getUserDetails(lastQuickView.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastQuickView?.id]);
+
   return quickviews.length ? (
     <>
       <div
@@ -19,11 +31,11 @@ const Quickview: React.FC = () => {
       }`}
       >
         {/* Header */}
-        <div className="flex p-3 justify-between">
+        <div className="flex p-3 justify-between shadow-1">
           <div>
             <h2>{lastQuickView.entity}</h2>
           </div>
-          <div>
+          <div className="flex align-items">
             <button onClick={onCloseQuickViews}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +51,9 @@ const Quickview: React.FC = () => {
           </div>
         </div>
         {/* Content */}
-        <div></div>
+        <div className="p-3">
+          {lastQuickView.entity === Entity.User && <UserQuickview />}
+        </div>
       </aside>
     </>
   ) : null;

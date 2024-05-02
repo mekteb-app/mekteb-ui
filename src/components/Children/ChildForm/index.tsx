@@ -33,7 +33,7 @@ const ChildForm: React.FC = () => {
   const status = useAppSelector(selectChildrenStatus);
   const currentUser = useAppSelector(selectCurrentUser);
   const { options: communityOptions, getCommunityOptions } = useCommunity();
-  const [userOptions, getUserOptions] = useUsers();
+  const { userOptions, getUserOptions } = useUsers();
 
   const [open, setOpen] = useState(false);
 
