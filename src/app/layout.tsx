@@ -1,13 +1,12 @@
 "use client";
-import "flatpickr/dist/flatpickr.min.css";
 import "@/css/satoshi.css";
 import "@/css/style.css";
+import "react-toastify/dist/ReactToastify.css";
 import { ReactNode, memo, useMemo, useState } from "react";
 import Head from "next/head";
 import { StoreProvider } from "./StoreProvider";
 import SessionProvider from "../components/lib/JWTSessionProvider";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 interface Props {
   readonly children: ReactNode;

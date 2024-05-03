@@ -4,6 +4,7 @@ import {
   createChild,
   fetchChildren,
   fetchChildrenOptions,
+  getChild,
 } from "./childrenAPI";
 import { IChildPayload } from "@/interfaces/IChildPayload";
 import { toast } from "react-toastify";
@@ -12,6 +13,7 @@ import { IChildOption } from "@/interfaces/IChildOption";
 
 export interface ChildrenSliceState {
   children: IChild[];
+  child: IChild | undefined;
   childrenOptions: IChildOption[];
   status: "idle" | "loading" | "failed" | "created";
   count: number;
@@ -20,6 +22,7 @@ export interface ChildrenSliceState {
 
 const initialState: ChildrenSliceState = {
   children: [],
+  child: undefined,
   childrenOptions: [],
   status: "idle",
   count: 0,
@@ -54,6 +57,26 @@ export const childrenSlice = createAppSlice({
         rejected: (state, action) => {
           state.status = "failed";
           state.error = action.error;
+        },
+      }
+    ),
+    setChildAsync: create.asyncThunk(
+      async (id: string) => {
+        const response = await getChild(id);
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.status = "idle";
+          state.child = action.payload.data;
+        },
+        rejected: (state, action) => {
+          state.status = "failed";
+          state.error = action.error as IError;
         },
       }
     ),
@@ -119,6 +142,7 @@ export const childrenSlice = createAppSlice({
   // Selectors
   selectors: {
     selectChildren: (Children) => Children.children || [],
+    selectChild: (Children) => Children.child || undefined,
     selectChildrenOptions: (Children) => Children.childrenOptions || [],
     selectChildrenCount: (Children) => Children.count || 0,
     selectChildrenStatus: (Children) => Children.status || "idle",
@@ -129,6 +153,7 @@ export const childrenSlice = createAppSlice({
 // Action creators are generated for each case reducer function.
 export const {
   setChildrenAsync,
+  setChildAsync,
   setChildrenOptionsAsync,
   createChildAsync,
   resetError,
@@ -138,6 +163,7 @@ export const {
 // Selectors returned by `slice.selectors` take the root state as their first argument.
 export const {
   selectChildren,
+  selectChild,
   selectChildrenOptions,
   selectChildrenCount,
   selectChildrenStatus,

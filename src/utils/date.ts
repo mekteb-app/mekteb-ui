@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 
 export const formatDate = (
-  date: string,
+  date: string | undefined,
   dateFormat: string = "dd/MM/yyyy HH:mm"
 ) => {
   if (!date) return "N/A";

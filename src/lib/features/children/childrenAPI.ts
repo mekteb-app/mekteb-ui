@@ -24,6 +24,12 @@ interface IChildResponse {
   status: number;
 }
 
+interface IChildResponse {
+  data: IChild;
+  message: string;
+  status: number;
+}
+
 // A mock function to mimic making an async request for data
 export const fetchChildren = async ({ page, count }: IPagination) => {
   const response = await baseApiCall(
@@ -31,6 +37,21 @@ export const fetchChildren = async ({ page, count }: IPagination) => {
     "GET"
   );
   const result: IChildrenResponse = await response.json();
+
+  if (response.status !== 200) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
+
+  return result;
+};
+
+export const getChild = async (id: string) => {
+  const response = await baseApiCall(
+    `${process.env.NEXT_PUBLIC_API_URL}/children/details/${id}`,
+    "GET"
+  );
+  const result: IChildResponse = await response.json();
 
   if (response.status !== 200) {
     const customError = new CustomError(result.message, response.status);

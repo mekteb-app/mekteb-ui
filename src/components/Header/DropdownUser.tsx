@@ -5,10 +5,13 @@ import { useAppSelector } from "@/lib/hooks";
 import { selectCurrentUser } from "@/lib/features/currentUser/currentUserSlice";
 import { roleLabel } from "@/utils/role";
 import useAuth from "@/hooks/useAuth";
+import useQuickview from "@/hooks/useQuickview";
+import { Entity } from "@/enums/entity";
 
 const DropdownUser = () => {
   const currentUser = useAppSelector(selectCurrentUser);
   const [logout] = useAuth();
+  const { onOpenQuickview } = useQuickview();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -97,9 +100,11 @@ const DropdownUser = () => {
       >
         <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
           <li>
-            <Link
-              href="/profile"
+            <button
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
+              onClick={() => {
+                onOpenQuickview(Entity.CurrentUser, currentUser?.id ?? "");
+              }}
             >
               <svg
                 className="fill-current"
@@ -119,7 +124,7 @@ const DropdownUser = () => {
                 />
               </svg>
               My Profile
-            </Link>
+            </button>
           </li>
           <li>
             <Link

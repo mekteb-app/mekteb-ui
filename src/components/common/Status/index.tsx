@@ -1,7 +1,7 @@
 import { Status as StatusEnum } from "@/enums/status";
 
 interface Props {
-  status: StatusEnum;
+  status: StatusEnum | undefined;
 }
 
 const Status = ({ status }: Props) => {
@@ -17,12 +17,14 @@ const Status = ({ status }: Props) => {
       : status === StatusEnum.INACTIVE
         ? "Inactive"
         : "Pending";
-  return (
+  return status ? (
     <p
       className={`inline-flex rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${statusClass}`}
     >
       {statusLabel}
     </p>
+  ) : (
+    <></>
   );
 };
 

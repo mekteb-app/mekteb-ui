@@ -9,7 +9,7 @@ interface IParent {
 }
 
 export interface IChild {
-  id?: string;
+  id: string;
   first_name: string;
   last_name: string;
   birthdate: string;

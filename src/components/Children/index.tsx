@@ -9,10 +9,15 @@ import ChildForm from "./ChildForm";
 import { useAppSelector } from "@/lib/hooks";
 import { selectCurrentUser } from "@/lib/features/currentUser/currentUserSlice";
 import { Role } from "@/enums/role";
+import { Entity } from "@/enums/entity";
+import useQuickview from "@/hooks/useQuickview";
+import Nivo from "../common/Nivo";
 
 const Children: React.FC = () => {
   const currentUser = useAppSelector(selectCurrentUser);
   const { children, count, getChildren } = useChildren();
+
+  const { onOpenQuickview } = useQuickview();
 
   useEffect(() => {
     getChildren(0);
@@ -38,9 +43,7 @@ const Children: React.FC = () => {
           <table className="w-full table-auto text-sm">
             <thead>
               <tr className="bg-gray-2 text-left ">
-                <th className="px-4 py-2 font-medium text-black xl:pl-11">
-                  Name
-                </th>
+                <th className="px-4 py-2 font-medium text-black">Name</th>
                 <th className="px-4 py-2 font-medium text-black">Nivo</th>
                 <th className="px-4 py-2 font-medium text-black ">Birthdate</th>
                 {currentUser?.role === Role.SuperAdmin && (
@@ -59,14 +62,17 @@ const Children: React.FC = () => {
               {children.map((child, key) => (
                 <tr key={key}>
                   {/* Name */}
-                  <td className="min-w-[120px] border-b border-[#eee] px-4 py-2 pl-4 xl:pl-8">
-                    <h5 className="font-medium text-black font-medium">
+                  <td className="min-w-[120px] border-b border-[#eee] px-4 py-2 pl-4">
+                    <h5
+                      className="font-medium text-black font-medium cursor-pointer hover:text-primary"
+                      onClick={() => onOpenQuickview(Entity.Child, child.id)}
+                    >
                       {`${child.first_name} ${child.last_name}`}
                     </h5>
                   </td>
                   {/* Email */}
                   <td className="min-w-[150px] border-b border-[#eee] px-4 py-2">
-                    <p className="text-black font-medium">{child.nivo}</p>
+                    <Nivo nivo={child.nivo} />
                   </td>
                   {/* Phone */}
                   <td className="border-b border-[#eee] px-4 py-2">

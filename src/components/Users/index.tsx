@@ -76,7 +76,7 @@ const Users: React.FC = () => {
           <table className="w-full table-auto text-sm">
             <thead>
               <tr className="bg-gray-2 text-left ">
-                <th className="px-4 py-2 font-medium text-black xl:pl-11">
+                <th className="px-4 py-2 font-medium text-black xl:pl-8">
                   Name
                 </th>
                 <th className="px-4 py-2 font-medium text-black">Email</th>

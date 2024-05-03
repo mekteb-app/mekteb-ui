@@ -75,7 +75,7 @@ export const createUser = async (data: IUserPayload) => {
 
 export const fetchUserDetails = async (id: string) => {
   const response = await baseApiCall(
-    `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/users/details/${id}`,
     "GET"
   );
   const result: IUserResponse = await response.json();

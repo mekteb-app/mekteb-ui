@@ -1,7 +1,7 @@
 import { Role as RoleEnum } from "@/enums/role";
 
 interface Props {
-  role: RoleEnum;
+  role: RoleEnum | undefined;
 }
 
 const Role = ({ role }: Props) => {
@@ -17,12 +17,14 @@ const Role = ({ role }: Props) => {
       : role === RoleEnum.Admin
         ? "Admin"
         : "User";
-  return (
+  return role ? (
     <p
       className={`inline-flex border rounded bg-opacity-10 px-3 py-1 text-sm font-medium ${roleClass}`}
     >
       {roleLabel}
     </p>
+  ) : (
+    <></>
   );
 };
 

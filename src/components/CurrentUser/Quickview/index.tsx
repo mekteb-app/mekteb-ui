@@ -1,25 +1,27 @@
 import Nivo from "@/components/common/Nivo";
 import Role from "@/components/common/Role";
 import Status from "@/components/common/Status";
-import useUsers from "@/hooks/useUsers";
 import { IChild } from "@/interfaces/IChild";
+import { selectCurrentUser } from "@/lib/features/currentUser/currentUserSlice";
+import { useAppSelector } from "@/lib/hooks";
 import { formatDate } from "@/utils/date";
 import React from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 
-const UserQuickview: React.FC = () => {
-  const { user } = useUsers();
+const CurrentUserQuickview: React.FC = () => {
+  const currentUser = useAppSelector(selectCurrentUser);
   return (
     <>
       {/* Header container */}
       <div className="flex w-full justify-end pb-3">
-        <Status status={user.status} />
+        <Status status={currentUser?.status} />
       </div>
       {/* Tabs container */}
       <Tabs>
         <TabList>
           <Tab>Details</Tab>
           <Tab>Children</Tab>
+          <Tab>Settings</Tab>
         </TabList>
 
         <TabPanel>
@@ -33,41 +35,41 @@ const UserQuickview: React.FC = () => {
             <tbody>
               <tr>
                 <td>Name</td>
-                <td>{`${user?.first_name} ${user?.last_name}`}</td>
+                <td>{`${currentUser?.first_name} ${currentUser?.last_name}`}</td>
               </tr>
               <tr>
                 <td>Email</td>
-                <td>{`${user?.email}`}</td>
+                <td>{`${currentUser?.email}`}</td>
               </tr>
               <tr>
                 <td>Phone</td>
-                <td>{`${user?.phone}`}</td>
+                <td>{`${currentUser?.phone}`}</td>
               </tr>
               <tr>
                 <td>Role</td>
                 <td>
-                  <Role role={user.role} />
+                  <Role role={currentUser?.role} />
                 </td>
               </tr>
               <tr>
                 <td>Community</td>
-                <td>{`${user?.community?.name || "N/A"}`}</td>
+                <td>{`${currentUser?.community?.name || "N/A"}`}</td>
               </tr>
               <tr>
                 <td>Created at</td>
-                <td>{`${formatDate(user.created_at)}`}</td>
+                <td>{`${formatDate(currentUser?.created_at)}`}</td>
               </tr>
               <tr>
                 <td>Updated at</td>
-                <td>{`${formatDate(user.updated_at)}`}</td>
+                <td>{`${formatDate(currentUser?.updated_at)}`}</td>
               </tr>
             </tbody>
           </table>
         </TabPanel>
 
         <TabPanel>
-          {user?.children?.length ? (
-            user?.children?.map((child: IChild, index: number) => (
+          {currentUser?.children?.length ? (
+            currentUser?.children?.map((child: IChild, index: number) => (
               <div className="py-2 text-sm" key={child.id || index}>
                 <div className="py-2">
                   <label className="font-bold">{`Child ${index + 1}`}</label>
@@ -112,9 +114,13 @@ const UserQuickview: React.FC = () => {
             <div className="text-sm p-2">No children added.</div>
           )}
         </TabPanel>
+
+        <TabPanel>
+          <div className="text-sm p-2">Settings</div>
+        </TabPanel>
       </Tabs>
     </>
   );
 };
 
-export default UserQuickview;
+export default CurrentUserQuickview;
