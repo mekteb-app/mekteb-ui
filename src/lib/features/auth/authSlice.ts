@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { IAuthUser } from "@/interfaces/IAuthUser";
 import { ILoginPayload } from "@/interfaces/ILoginPayload";
 import { IVerifyUser } from "@/interfaces/IVerifyUser";
+import { IResetPassword } from "@/interfaces/IResetPassword";
 
 export const authApiSlice = createApi({
   baseQuery: fetchBaseQuery({
@@ -31,8 +32,33 @@ export const authApiSlice = createApi({
         body: verifyCredentials,
       }),
     }),
+    forgetPassword: build.mutation<
+      { message: string; status: number },
+      { email: string }
+    >({
+      query: (emailBody) => ({
+        url: "/forget-password",
+        method: "POST",
+        body: emailBody,
+      }),
+    }),
+    resetPassword: build.mutation<
+      { message: string; status: number },
+      IResetPassword
+    >({
+      query: (resetPasswordCredentials) => ({
+        url: "/reset-password",
+        method: "POST",
+        body: resetPasswordCredentials,
+      }),
+    }),
   }),
 });
 
 // Exporting the `login` endpoint directly
-export const { useLoginMutation, useVerifyUserMutation } = authApiSlice;
+export const {
+  useLoginMutation,
+  useVerifyUserMutation,
+  useForgetPasswordMutation,
+  useResetPasswordMutation,
+} = authApiSlice;
