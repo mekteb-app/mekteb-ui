@@ -9,5 +9,4 @@ div.react-responsive-modal-modal {
 
 div.app-modal-content {
   max-height: fit-content;
-  overflow-y: auto;
 }

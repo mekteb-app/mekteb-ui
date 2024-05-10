@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/css/datepicker.css";
@@ -9,10 +9,16 @@ interface IDatePickerProps {
   name: string;
   maxDate?: Date;
   minDate?: Date;
+  value?: Date;
 }
 
 const AppDatePicker = forwardRef((props: IDatePickerProps, _ref) => {
   const [startDate, setStartDate] = useState<Date>();
+
+  useEffect(() => {
+    if (props.value) setStartDate(props.value);
+  }, [props.value]);
+
   return (
     <DatePicker
       selected={startDate}

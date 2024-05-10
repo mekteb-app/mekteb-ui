@@ -1,6 +1,5 @@
 import AppDatePicker from "@/components/FormElements/DatePicker/DatePicker";
 import FormItemError from "@/components/FormElements/FormItemError";
-import CreateUserIcon from "@/components/Icons/create-user";
 import AppModal from "@/components/Modal";
 import { IUserPayload } from "@/interfaces/IUserPayload";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -11,32 +10,52 @@ import { Nivo } from "@/enums/nivo";
 import TrashCanIcon from "@/components/Icons/trash-can.icon";
 import AppSelect from "@/components/FormElements/Select";
 import { subYears } from "date-fns";
-import { createUserAsync, selectStatus } from "@/lib/features/users/usersSlice";
+import {
+  createUserAsync,
+  selectStatus,
+  updateUserAsync,
+} from "@/lib/features/users/usersSlice";
 import useChildren from "@/hooks/useChildren";
 import AppMultiSelect from "@/components/FormElements/MultiSelect/index";
 import { selectCurrentUser } from "@/lib/features/currentUser/currentUserSlice";
 import useCommunity from "@/hooks/useCommunity";
 import { Role } from "@/enums/role";
+import { IUser } from "@/interfaces/IUser";
+
+const roleOptions = [
+  { value: Role.SuperAdmin, label: "Super admin" },
+  { value: Role.Admin, label: "Admin" },
+  { value: Role.User, label: "User" },
+];
+
+const nivoOptions = [
+  { value: Nivo.First, label: "First" },
+  { value: Nivo.Second, label: "Second" },
+  { value: Nivo.Third, label: "Third" },
+  { value: Nivo.Fourth, label: "Fourth" },
+  { value: Nivo.Fifth, label: "Fifth" },
+];
+
+interface UserFormProps {
+  open: boolean;
+  onClose: () => void;
+  user?: IUser;
+}
 
 const initialChild: IChildPayload = {
   first_name: "",
   last_name: "",
   birthdate: "",
-  nivo: Nivo.First,
+  nivo: undefined,
 };
 
-const UserForm: React.FC = () => {
+const UserForm: React.FC<UserFormProps> = ({ open, onClose, user }) => {
   const dispatch = useAppDispatch();
   const status = useAppSelector(selectStatus);
 
   const { childrenOptions, getChildrenOptions } = useChildren();
   const currentUser = useAppSelector(selectCurrentUser);
   const { options: communityOptions, getCommunityOptions } = useCommunity();
-
-  const [open, setOpen] = useState(false);
-
-  const onOpenModal = () => setOpen(true);
-  const onCloseModal = () => setOpen(false);
 
   const {
     register,
@@ -45,6 +64,8 @@ const UserForm: React.FC = () => {
     formState: { errors },
     reset,
     trigger,
+    setValue,
+    getValues,
   } = useForm<IUserPayload>({
     defaultValues: {
       first_name: "",
@@ -81,7 +102,11 @@ const UserForm: React.FC = () => {
   );
 
   const onSubmit = (data: IUserPayload) => {
-    dispatch(createUserAsync(data));
+    if (user?.id) {
+      dispatch(updateUserAsync({ id: user.id, data }));
+    } else {
+      dispatch(createUserAsync(data));
+    }
   };
 
   useEffect(() => {
@@ -100,26 +125,34 @@ const UserForm: React.FC = () => {
   }, [open, reset]);
 
   useEffect(() => {
-    if (status === "created") {
-      onCloseModal();
+    if (status === "created" || status === "updated") {
+      getChildrenOptions(); // Refresh children options
+      onClose();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
+
+  useEffect(() => {
+    if (user && user?.id) {
+      setValue("first_name", user.first_name);
+      setValue("last_name", user.last_name);
+      setValue("email", user.email);
+      setValue("phone", user.phone);
+      setValue("birthdate", user.birthdate);
+      setValue("communityId", user.community?.id);
+      setValue("role", user.role);
+      setValue("childrenIds", user?.children?.map((c) => c.id) || []);
+    }
+  }, [setValue, user, user?.id]);
 
   return (
     <>
-      <button
-        className="flex bg-primary px-3 py-2 text-center text-white hover:bg-opacity-90 lg:px-3 xl:px-4 text-sm rounded align-middle items-center"
-        onClick={onOpenModal}
-      >
-        <CreateUserIcon />
-        <div className="ml-1 hidden lg:block">Create user</div>
-      </button>
       <AppModal
-        title="Create user"
+        title={user?.id ? "Update user" : "Create user"}
         open={open}
         onClose={() => {
           reset();
-          onCloseModal();
+          onClose();
         }}
         closeOnOverlayClick={false}
       >
@@ -161,6 +194,7 @@ const UserForm: React.FC = () => {
                     Email
                   </label>
                   <input
+                    disabled={!!user?.id}
                     {...register("email", { required: true })}
                     type="email"
                     placeholder="Enter parent email address"
@@ -199,6 +233,11 @@ const UserForm: React.FC = () => {
                       <AppDatePicker
                         {...field}
                         maxDate={subYears(new Date(), 18)}
+                        value={
+                          getValues()?.birthdate
+                            ? new Date(getValues()?.birthdate)
+                            : undefined
+                        }
                       />
                     )}
                   />
@@ -223,6 +262,9 @@ const UserForm: React.FC = () => {
                             placeholder="Select community"
                             options={communityOptionValues}
                             {...field}
+                            value={communityOptionValues.find(
+                              ({ value }) => getValues()?.communityId === value
+                            )}
                           />
                         )}
                       />
@@ -241,26 +283,25 @@ const UserForm: React.FC = () => {
                       <label className="mb-3 block text-sm font-medium text-black ">
                         Role
                       </label>
-                      {/* Community */}
+                      {/* Role */}
                       <Controller
                         name="role"
                         control={control}
                         rules={{ required: true }}
                         render={({ field }) => (
                           <AppSelect
-                            placeholder="Select role"
-                            options={[
-                              { value: Role.SuperAdmin, label: "Super admin" },
-                              { value: Role.Admin, label: "Admin" },
-                              { value: Role.User, label: "User" },
-                            ]}
-                            formatValue={(val) => +val}
                             {...field}
+                            placeholder="Select role"
+                            options={roleOptions}
+                            formatValue={(val) => +val}
+                            value={roleOptions.find(
+                              (r) => r.value === getValues()?.role
+                            )}
                           />
                         )}
                       />
-                      {errors.communityId && (
-                        <FormItemError>Community is required.</FormItemError>
+                      {errors.role && (
+                        <FormItemError>Role is required.</FormItemError>
                       )}
                     </>
                   )}
@@ -280,6 +321,11 @@ const UserForm: React.FC = () => {
                     render={({ field }) => (
                       <AppMultiSelect
                         {...field}
+                        value={childrenOptionValues.filter((option) =>
+                          (getValues()?.childrenIds ?? []).includes(
+                            option.value
+                          )
+                        )}
                         placeholder="Select existing children"
                         options={childrenOptionValues}
                       />
@@ -362,7 +408,19 @@ const UserForm: React.FC = () => {
                                 name={`newChildren.${index}.birthdate`}
                                 control={control}
                                 render={({ field }) => (
-                                  <AppDatePicker {...field} />
+                                  <AppDatePicker
+                                    {...field}
+                                    value={
+                                      getValues()?.newChildren?.[index]
+                                        ?.birthdate
+                                        ? new Date(
+                                            getValues()?.newChildren?.[
+                                              index
+                                            ]?.birthdate
+                                          )
+                                        : undefined
+                                    }
+                                  />
                                 )}
                                 rules={{ required: true }}
                               />
@@ -381,14 +439,13 @@ const UserForm: React.FC = () => {
                                 control={control}
                                 render={({ field }) => (
                                   <AppSelect
-                                    options={[
-                                      { value: Nivo.First, label: "First" },
-                                      { value: Nivo.Second, label: "Second" },
-                                      { value: Nivo.Third, label: "Third" },
-                                      { value: Nivo.Fourth, label: "Fourth" },
-                                      { value: Nivo.Fifth, label: "Fifth" },
-                                    ]}
                                     {...field}
+                                    options={nivoOptions}
+                                    value={nivoOptions.find(
+                                      (nivo) =>
+                                        nivo.value ===
+                                        getValues()?.newChildren?.[index]?.nivo
+                                    )}
                                   />
                                 )}
                                 rules={{ required: true }}
@@ -427,7 +484,7 @@ const UserForm: React.FC = () => {
                 className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
                 type="submit"
               >
-                Create user
+                {user?.id ? "Update user" : "Create user"}
               </button>
             </div>
           </form>

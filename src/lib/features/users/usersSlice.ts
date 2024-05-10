@@ -5,6 +5,7 @@ import {
   fetchUserDetails,
   fetchUserOptions,
   fetchUsers,
+  updateUser,
 } from "./usersAPI";
 import { IUser } from "@/interfaces/IUser";
 import { IUserPayload } from "@/interfaces/IUserPayload";
@@ -16,7 +17,7 @@ export interface UsersSliceState {
   users: IUser[];
   userOptions: IUserOption[];
   user: IUser | undefined;
-  status: "idle" | "loading" | "failed" | "created";
+  status: "idle" | "loading" | "failed" | "created" | "updated";
   count: number;
   error: any;
 }
@@ -37,13 +38,6 @@ export const usersSlice = createAppSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: (create) => ({
-    updateUser: create.reducer((state, action: PayloadAction<any>) => {
-      const updatedUser = action.payload;
-      const currentValue = state.users.map((user) =>
-        user.id === updatedUser.id ? updatedUser : user
-      );
-      state.users = currentValue;
-    }),
     // Fetche users from the API and set them in the state
     setUsersAsync: create.asyncThunk(
       async (page = 1) => {
@@ -110,6 +104,31 @@ export const usersSlice = createAppSlice({
         },
       }
     ),
+    updateUserAsync: create.asyncThunk(
+      async ({ id, data }: { id: string; data: IUserPayload }) => {
+        const response = await updateUser(id, data);
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.status = "updated";
+          state.users = (state.users || []).map((user) =>
+            user.id === action.payload.data?.id ? action.payload.data : user
+          );
+          state.user = action.payload.data;
+          toast.success("User successfully updated");
+        },
+        rejected: (state, action) => {
+          console.log("rejected");
+          state.status = "failed";
+          state.error = action.error as IError;
+        },
+      }
+    ),
     setUserDetailsAsync: create.asyncThunk(
       async (id: string) => {
         const response = await fetchUserDetails(id);
@@ -159,7 +178,7 @@ export const {
   setUsersAsync,
   setUserOptionsAsync,
   setUserDetailsAsync,
-  updateUser,
+  updateUserAsync,
   createUserAsync,
   resetError,
   resetUsersState,

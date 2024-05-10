@@ -87,3 +87,20 @@ export const fetchUserDetails = async (id: string) => {
 
   return result;
 };
+
+export const updateUser = async (id: string, data: IUserPayload) => {
+  const response = await baseApiCallBody(
+    `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
+    "PUT",
+    {},
+    data
+  );
+  const result: IUserResponse = await response.json();
+
+  if (response.status !== 200) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
+
+  return result;
+};
