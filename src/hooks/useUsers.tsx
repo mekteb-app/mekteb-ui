@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import useErrorHandling from "./useErrorHandling";
 import { IUserOption } from "@/interfaces/IUserOption";
 import {
+  removeUserAsync,
   resetError,
   selectUser,
   selectUserError,
@@ -17,6 +18,7 @@ const useUsers = (): {
   user: IUser | any;
   getUserOptions: () => Promise<void>;
   getUserDetails: (id: string) => Promise<void>;
+  removeUser: (id: string) => Promise<void>;
 } => {
   const dispatch = useAppDispatch();
   const { setError } = useErrorHandling();
@@ -41,6 +43,14 @@ const useUsers = (): {
     }
   };
 
+  const removeUser = async (id: string) => {
+    try {
+      await dispatch(removeUserAsync(id));
+    } catch (error) {
+      setError(error as any);
+    }
+  };
+
   useEffect(() => {
     if (error) {
       setError(error);
@@ -51,7 +61,7 @@ const useUsers = (): {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
-  return { userOptions, user, getUserOptions, getUserDetails };
+  return { userOptions, user, getUserOptions, getUserDetails, removeUser };
 };
 
 export default useUsers;

@@ -25,6 +25,7 @@ import useUsers from "@/hooks/useUsers";
 import EyeIcon from "../Icons/eye.icon";
 import TrashCanIcon from "../Icons/trash-can.icon";
 import EditIcon from "../Icons/edit.icon";
+import Popover from "../Popover";
 
 const Users: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -35,7 +36,7 @@ const Users: React.FC = () => {
   const currentUser = useAppSelector(selectCurrentUser);
   const { onOpenQuickview } = useQuickview();
 
-  const { user, getUserDetails } = useUsers();
+  const { user, getUserDetails, removeUser } = useUsers();
 
   const [userModalOpen, setUserModalOpen] = useState(false);
 
@@ -178,9 +179,16 @@ const Users: React.FC = () => {
                       >
                         <EditIcon />
                       </button>
-                      <button className="hover:text-primary">
-                        <TrashCanIcon />
-                      </button>
+                      <Popover
+                        onConfirm={async () => {
+                          console.log("REMOVE USER =>", user.id);
+                          await removeUser(user.id);
+                        }}
+                      >
+                        <button className="hover:text-primary">
+                          <TrashCanIcon />
+                        </button>
+                      </Popover>
                     </div>
                   </td>
                 </tr>

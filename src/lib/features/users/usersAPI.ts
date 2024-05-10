@@ -104,3 +104,19 @@ export const updateUser = async (id: string, data: IUserPayload) => {
 
   return result;
 };
+
+export const removeUser = async (id: string) => {
+  const response = await baseApiCall(
+    `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
+    "DELETE",
+    {}
+  );
+  const result: IUserResponse = await response.json();
+
+  if (response.status !== 200) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
+
+  return result;
+};

@@ -5,6 +5,7 @@ import {
   fetchUserDetails,
   fetchUserOptions,
   fetchUsers,
+  removeUser,
   updateUser,
 } from "./usersAPI";
 import { IUser } from "@/interfaces/IUser";
@@ -149,6 +150,30 @@ export const usersSlice = createAppSlice({
         },
       }
     ),
+    removeUserAsync: create.asyncThunk(
+      async (id: string) => {
+        const response = await removeUser(id);
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.status = "idle";
+          state.users = state.users.filter(
+            (u) => u.id !== action.payload.data.id
+          );
+          toast.success("User successfully deleted");
+        },
+        rejected: (state, action) => {
+          state.status = "failed";
+          state.error = action.error as IError;
+        },
+      }
+    ),
+
     resetError: create.reducer((state) => {
       state.error = undefined;
     }),
@@ -180,6 +205,7 @@ export const {
   setUserDetailsAsync,
   updateUserAsync,
   createUserAsync,
+  removeUserAsync,
   resetError,
   resetUsersState,
 } = usersSlice.actions;
