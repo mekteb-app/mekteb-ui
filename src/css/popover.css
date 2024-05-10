@@ -1,0 +1,11 @@
+.popover-container {
+  position: relative;
+}
+
+.popover-content {
+  top: -50%;
+}
+
+.popover-trigger {
+  cursor: pointer;
+}
