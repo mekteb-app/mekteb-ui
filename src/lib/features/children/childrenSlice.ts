@@ -5,6 +5,7 @@ import {
   fetchChildren,
   fetchChildrenOptions,
   getChild,
+  updateChild,
 } from "./childrenAPI";
 import { IChildPayload } from "@/interfaces/IChildPayload";
 import { toast } from "react-toastify";
@@ -15,7 +16,7 @@ export interface ChildrenSliceState {
   children: IChild[];
   child: IChild | undefined;
   childrenOptions: IChildOption[];
-  status: "idle" | "loading" | "failed" | "created";
+  status: "idle" | "loading" | "failed" | "created" | "updated";
   count: number;
   error: any;
 }
@@ -104,6 +105,31 @@ export const childrenSlice = createAppSlice({
       }
     ),
 
+    updateChildAsync: create.asyncThunk(
+      async ({ id, data }: { id: string; data: IChildPayload }) => {
+        const response = await updateChild(id, data);
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.status = "updated";
+          state.children = (state.children || []).map((child) =>
+            child.id === action.payload.data?.id ? action.payload.data : child
+          );
+          toast.success("Child updated successfully");
+        },
+        rejected: (state, action) => {
+          console.log("rejected");
+          state.status = "failed";
+          state.error = action.error as IError;
+        },
+      }
+    ),
+
     setChildrenOptionsAsync: create.asyncThunk(
       async () => {
         const response = await fetchChildrenOptions();
@@ -131,8 +157,13 @@ export const childrenSlice = createAppSlice({
       state.error = undefined;
     }),
 
+    resetChildState: create.reducer((state) => {
+      state.child = undefined;
+    }),
+
     resetChildrenState: create.reducer((state) => {
       state.children = [];
+      state.child = undefined;
       state.childrenOptions = [];
       state.status = "idle";
       state.count = 0;
@@ -156,7 +187,9 @@ export const {
   setChildAsync,
   setChildrenOptionsAsync,
   createChildAsync,
+  updateChildAsync,
   resetError,
+  resetChildState,
   resetChildrenState,
 } = childrenSlice.actions;
 

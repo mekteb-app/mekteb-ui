@@ -92,3 +92,20 @@ export const fetchChildrenOptions = async () => {
 
   return result;
 };
+
+export const updateChild = async (id: string, data: IChildPayload) => {
+  const response = await baseApiCallBody(
+    `${process.env.NEXT_PUBLIC_API_URL}/children/${id}`,
+    "PUT",
+    {},
+    data
+  );
+  const result: IChildResponse = await response.json();
+
+  if (response.status !== 200) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
+
+  return result;
+};

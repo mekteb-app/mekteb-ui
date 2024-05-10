@@ -21,20 +21,7 @@ import { selectCurrentUser } from "@/lib/features/currentUser/currentUserSlice";
 import useCommunity from "@/hooks/useCommunity";
 import { Role } from "@/enums/role";
 import { IUser } from "@/interfaces/IUser";
-
-const roleOptions = [
-  { value: Role.SuperAdmin, label: "Super admin" },
-  { value: Role.Admin, label: "Admin" },
-  { value: Role.User, label: "User" },
-];
-
-const nivoOptions = [
-  { value: Nivo.First, label: "First" },
-  { value: Nivo.Second, label: "Second" },
-  { value: Nivo.Third, label: "Third" },
-  { value: Nivo.Fourth, label: "Fourth" },
-  { value: Nivo.Fifth, label: "Fifth" },
-];
+import { nivoOptions, roleOptions } from "@/constants";
 
 interface UserFormProps {
   open: boolean;
@@ -420,6 +407,8 @@ const UserForm: React.FC<UserFormProps> = ({ open, onClose, user }) => {
                                           )
                                         : undefined
                                     }
+                                    maxDate={subYears(new Date(), 5)}
+                                    minDate={subYears(new Date(), 18)}
                                   />
                                 )}
                                 rules={{ required: true }}

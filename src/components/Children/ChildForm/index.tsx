@@ -12,12 +12,15 @@ import { subYears } from "date-fns";
 import {
   createChildAsync,
   selectChildrenStatus,
+  updateChildAsync,
 } from "@/lib/features/children/childrenSlice";
 import useCommunity from "@/hooks/useCommunity";
 import AppMultiSelect from "@/components/FormElements/MultiSelect/index";
 import useUsers from "@/hooks/useUsers";
 import { selectCurrentUser } from "@/lib/features/currentUser/currentUserSlice";
 import { Role } from "@/enums/role";
+import { IChild } from "@/interfaces/IChild";
+import { nivoOptions } from "@/constants";
 
 const initialChild: IChildPayload = {
   first_name: "",
@@ -27,18 +30,18 @@ const initialChild: IChildPayload = {
   parentIds: [],
   communityId: undefined,
 };
+interface ChildFormProps {
+  open: boolean;
+  onClose: () => void;
+  child?: IChild;
+}
 
-const ChildForm: React.FC = () => {
+const ChildForm: React.FC<ChildFormProps> = ({ open, onClose, child }) => {
   const dispatch = useAppDispatch();
   const status = useAppSelector(selectChildrenStatus);
   const currentUser = useAppSelector(selectCurrentUser);
   const { options: communityOptions, getCommunityOptions } = useCommunity();
   const { userOptions, getUserOptions } = useUsers();
-
-  const [open, setOpen] = useState(false);
-
-  const onOpenModal = () => setOpen(true);
-  const onCloseModal = () => setOpen(false);
 
   const {
     register,
@@ -46,6 +49,8 @@ const ChildForm: React.FC = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    getValues,
+    setValue,
   } = useForm<IChildPayload>({
     defaultValues: initialChild,
     mode: "onTouched",
@@ -70,14 +75,18 @@ const ChildForm: React.FC = () => {
   );
 
   const onSubmit = (data: IChildPayload) => {
-    dispatch(createChildAsync(data));
+    if (child?.id) {
+      dispatch(updateChildAsync({ id: child.id, data }));
+    } else {
+      dispatch(createChildAsync(data));
+    }
   };
 
   useEffect(() => {
     if (open) {
       reset({});
 
-      if (status !== "loading" && !communityOptions.length) {
+      if (!communityOptions.length) {
         getCommunityOptions();
       }
 
@@ -89,26 +98,30 @@ const ChildForm: React.FC = () => {
   }, [open, reset]);
 
   useEffect(() => {
-    if (status === "created") {
-      onCloseModal();
+    if (status === "created" || status === "updated") {
+      onClose();
     }
-  }, [status]);
+  }, [onClose, status]);
+
+  useEffect(() => {
+    if (child && child?.id) {
+      setValue("first_name", child.first_name);
+      setValue("last_name", child.last_name);
+      setValue("birthdate", child.birthdate);
+      setValue("nivo", child.nivo);
+      setValue("communityId", child.community?.id);
+      setValue("parentIds", (child?.parents || []).map((p) => p.id) || []);
+    }
+  }, [setValue, child, child?.id]);
 
   return (
     <>
-      <button
-        className="flex bg-primary px-3 py-2 text-center text-white hover:bg-opacity-90 lg:px-3 xl:px-4 text-sm rounded align-middle items-center"
-        onClick={onOpenModal}
-      >
-        <CreateUserIcon />
-        <div className="ml-1 hidden lg:block">Create child</div>
-      </button>
       <AppModal
-        title="Create child"
+        title={child?.id ? "Update child" : "Create child"}
         open={open}
         onClose={() => {
           reset();
-          onCloseModal();
+          onClose();
         }}
         closeOnOverlayClick={false}
       >
@@ -152,11 +165,17 @@ const ChildForm: React.FC = () => {
                   <Controller
                     name="birthdate"
                     control={control}
+                    rules={{ required: true }}
                     render={({ field }) => (
                       <AppDatePicker
                         {...field}
                         maxDate={subYears(new Date(), 5)}
                         minDate={subYears(new Date(), 18)}
+                        value={
+                          getValues()?.birthdate
+                            ? new Date(getValues()?.birthdate)
+                            : undefined
+                        }
                       />
                     )}
                   />
@@ -174,16 +193,13 @@ const ChildForm: React.FC = () => {
                     control={control}
                     render={({ field }) => (
                       <AppSelect
-                        placeholder="Select nivo"
-                        options={[
-                          { value: Nivo.First, label: "First" },
-                          { value: Nivo.Second, label: "Second" },
-                          { value: Nivo.Third, label: "Third" },
-                          { value: Nivo.Fourth, label: "Fourth" },
-                          { value: Nivo.Fifth, label: "Fifth" },
-                        ]}
-                        formatValue={(val) => +val}
                         {...field}
+                        placeholder="Select nivo"
+                        options={nivoOptions}
+                        formatValue={(val) => +val}
+                        value={nivoOptions.find(
+                          (nivo) => nivo.value === getValues()?.nivo
+                        )}
                       />
                     )}
                     rules={{ required: true }}
@@ -209,6 +225,9 @@ const ChildForm: React.FC = () => {
                         {...field}
                         placeholder="Select parents"
                         options={userOptionValues}
+                        value={userOptionValues.filter((option) =>
+                          (getValues()?.parentIds ?? []).includes(option.value)
+                        )}
                       />
                     )}
                   />
@@ -223,14 +242,21 @@ const ChildForm: React.FC = () => {
                     <Controller
                       name="communityId"
                       control={control}
+                      rules={{ required: true }}
                       render={({ field }) => (
                         <AppSelect
+                          {...field}
                           placeholder="Select community"
                           options={communityOptionValues}
-                          {...field}
+                          value={communityOptionValues.find(
+                            ({ value }) => getValues()?.communityId === value
+                          )}
                         />
                       )}
                     />
+                    {errors?.communityId && (
+                      <FormItemError>Community is required.</FormItemError>
+                    )}
                   </div>
                 )}
               </div>
@@ -239,7 +265,7 @@ const ChildForm: React.FC = () => {
                 className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
                 type="submit"
               >
-                Create child
+                {child?.id ? "Update child" : "Create child"}
               </button>
             </div>
           </form>

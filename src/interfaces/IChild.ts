@@ -3,7 +3,7 @@ import { ICommunity } from "./ICommunity";
 import { Status } from "@/enums/status";
 
 interface IParent {
-  id?: number;
+  id: string;
   first_name: string;
   last_name: string;
 }

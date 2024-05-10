@@ -1,4 +1,5 @@
 import {
+  resetChildState,
   resetError,
   selectChild,
   selectChildren,
@@ -24,6 +25,7 @@ const useChildren = (): {
   getChildren: (page?: number) => Promise<void>;
   getChildDetails: (id: string) => Promise<void>;
   getChildrenOptions: () => Promise<void>;
+  resetChildDetails: () => void;
 } => {
   const dispatch = useAppDispatch();
   const { setError } = useErrorHandling();
@@ -45,6 +47,14 @@ const useChildren = (): {
   const getChildDetails = async (id: string) => {
     try {
       await dispatch(setChildAsync(id));
+    } catch (error) {
+      setError(error as any);
+    }
+  };
+
+  const resetChildDetails = () => {
+    try {
+      dispatch(resetChildState());
     } catch (error) {
       setError(error as any);
     }
@@ -76,6 +86,7 @@ const useChildren = (): {
     getChildren,
     getChildDetails,
     getChildrenOptions,
+    resetChildDetails,
   };
 };
 
