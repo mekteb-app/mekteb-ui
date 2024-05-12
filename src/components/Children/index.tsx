@@ -15,6 +15,7 @@ import Nivo from "../common/Nivo";
 import CreateUserIcon from "../Icons/create-user";
 import EditIcon from "../Icons/edit.icon";
 import TrashCanIcon from "../Icons/trash-can.icon";
+import Popover from "../Popover";
 
 const Children: React.FC = () => {
   const currentUser = useAppSelector(selectCurrentUser);
@@ -25,6 +26,7 @@ const Children: React.FC = () => {
     getChildDetails,
     getChildren,
     resetChildDetails,
+    removeChild,
   } = useChildren();
   const { onOpenQuickview } = useQuickview();
 
@@ -138,9 +140,15 @@ const Children: React.FC = () => {
                       >
                         <EditIcon />
                       </button>
-                      <button className="hover:text-primary">
-                        <TrashCanIcon />
-                      </button>
+                      <Popover
+                        onConfirm={async () => {
+                          await removeChild(child.id);
+                        }}
+                      >
+                        <button className="hover:text-primary">
+                          <TrashCanIcon />
+                        </button>
+                      </Popover>
                     </div>
                   </td>
                 </tr>

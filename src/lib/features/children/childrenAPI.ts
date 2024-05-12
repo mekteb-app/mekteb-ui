@@ -109,3 +109,19 @@ export const updateChild = async (id: string, data: IChildPayload) => {
 
   return result;
 };
+
+export const removeChild = async (id: string) => {
+  const response = await baseApiCall(
+    `${process.env.NEXT_PUBLIC_API_URL}/children/${id}`,
+    "DELETE",
+    {}
+  );
+  const result: IChildResponse = await response.json();
+
+  if (response.status !== 200) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
+
+  return result;
+};

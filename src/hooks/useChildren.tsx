@@ -1,4 +1,5 @@
 import {
+  removeChildAsync,
   resetChildState,
   resetError,
   selectChild,
@@ -15,7 +16,6 @@ import { useEffect } from "react";
 import useErrorHandling from "./useErrorHandling";
 import { IChild } from "@/interfaces/IChild";
 import { IChildOption } from "@/interfaces/IChildOption";
-import { getChild } from "../lib/features/children/childrenAPI";
 
 const useChildren = (): {
   children: IChild[];
@@ -24,6 +24,7 @@ const useChildren = (): {
   count: number;
   getChildren: (page?: number) => Promise<void>;
   getChildDetails: (id: string) => Promise<void>;
+  removeChild: (id: string) => Promise<void>;
   getChildrenOptions: () => Promise<void>;
   resetChildDetails: () => void;
 } => {
@@ -68,6 +69,14 @@ const useChildren = (): {
     }
   };
 
+  const removeChild = async (id: string) => {
+    try {
+      await dispatch(removeChildAsync(id));
+    } catch (error) {
+      setError(error as any);
+    }
+  };
+
   useEffect(() => {
     if (error) {
       setError(error);
@@ -85,6 +94,7 @@ const useChildren = (): {
     count,
     getChildren,
     getChildDetails,
+    removeChild,
     getChildrenOptions,
     resetChildDetails,
   };

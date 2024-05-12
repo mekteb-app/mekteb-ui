@@ -181,7 +181,6 @@ const Users: React.FC = () => {
                       </button>
                       <Popover
                         onConfirm={async () => {
-                          console.log("REMOVE USER =>", user.id);
                           await removeUser(user.id);
                         }}
                       >

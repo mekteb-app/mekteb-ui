@@ -5,6 +5,7 @@ import {
   fetchChildren,
   fetchChildrenOptions,
   getChild,
+  removeChild,
   updateChild,
 } from "./childrenAPI";
 import { IChildPayload } from "@/interfaces/IChildPayload";
@@ -152,6 +153,30 @@ export const childrenSlice = createAppSlice({
         },
       }
     ),
+    removeChildAsync: create.asyncThunk(
+      async (id: string) => {
+        const response = await removeChild(id);
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.status = "idle";
+          state.children = (state.children || []).filter(
+            (child) => child.id !== action.payload.data?.id
+          );
+          state.count = state.count - 1;
+          toast.success("Child removed successfully");
+        },
+        rejected: (state, action) => {
+          state.status = "failed";
+          state.error = action.error as IError;
+        },
+      }
+    ),
 
     resetError: create.reducer((state) => {
       state.error = undefined;
@@ -188,6 +213,7 @@ export const {
   setChildrenOptionsAsync,
   createChildAsync,
   updateChildAsync,
+  removeChildAsync,
   resetError,
   resetChildState,
   resetChildrenState,
