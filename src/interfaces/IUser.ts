@@ -1,13 +1,14 @@
 import { Status } from "@/enums/status";
 import { ICommunity } from "./ICommunity";
 import { IChild } from "./IChild";
+import { Role } from "@/enums/role";
 
 export interface IUser {
-  id: number;
+  id: string;
   first_name: string;
   last_name: string;
   email: string;
-  role: number;
+  role: Role;
   phone: string;
   birthdate: string;
   status: Status;

@@ -28,8 +28,10 @@ const AppModal: React.FC<ModalProps> = ({
         container={myRef.current}
         closeOnOverlayClick={closeOnOverlayClick}
       >
-        <h2>{title}</h2>
-        {children}
+        <div className="pb-2">
+          <h2>{title}</h2>
+        </div>
+        <div className="app-modal-content">{children}</div>
       </Modal>
     </>
   );

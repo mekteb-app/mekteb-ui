@@ -1,0 +1,18 @@
+div.app-select {
+  box-shadow: none;
+  border-color: rgb(226 232 240 / var(--tw-border-opacity));
+}
+
+div.app-select:hover {
+  border-color: rgb(0 121 67 / var(--tw-border-opacity));
+}
+div.app-select:active {
+  border-color: rgb(0 121 67 / var(--tw-border-opacity));
+}
+div.app-select:focus {
+  border-color: rgb(0 121 67 / var(--tw-border-opacity));
+}
+
+div.app-select-menu-open {
+  border-color: rgb(0 121 67 / var(--tw-border-opacity));
+}

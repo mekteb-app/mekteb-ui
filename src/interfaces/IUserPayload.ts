@@ -9,4 +9,5 @@ export interface IUserPayload {
   birthdate: string;
   newChildren: IChildPayload[];
   childrenIds: string[];
+  communityId?: string;
 }

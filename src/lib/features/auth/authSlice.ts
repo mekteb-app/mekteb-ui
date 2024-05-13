@@ -1,76 +1,64 @@
-import { createAppSlice } from "@/lib/createAppSlice";
-import { login, verify } from "./authAPI";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { IAuthUser } from "@/interfaces/IAuthUser";
 import { ILoginPayload } from "@/interfaces/ILoginPayload";
-import { SESSION_TOKEN } from "@/constants";
 import { IVerifyUser } from "@/interfaces/IVerifyUser";
+import { IResetPassword } from "@/interfaces/IResetPassword";
 
-export interface AuthSliceState {
-  currentUser?: IAuthUser;
-  status: "idle" | "loading" | "failed" | "verified";
-}
-
-const initialState: AuthSliceState = {
-  currentUser: {},
-  status: "idle",
-};
-
-// If you are not using async thunks you can use the standalone `createSlice`.
-export const authSlice = createAppSlice({
-  name: "auth",
-  // `createSlice` will infer the state type from the `initialState` argument
-  initialState,
-  // The `reducers` field lets us define reducers and generate associated actions
-  reducers: (create) => ({
-    // Fetch access token and current user details from the API and set them in the state
-    setCurrentUserAsync: create.asyncThunk(
-      async (data: ILoginPayload) => {
-        const response = await login(data);
-        // The value we return becomes the `fulfilled` action payload
-        return response;
-      },
-      {
-        pending: (state) => {
-          state.status = "loading";
-        },
-        fulfilled: (state, action) => {
-          state.status = "idle";
-          state.currentUser = action.payload.data || null;
-        },
-        rejected: (state) => {
-          state.status = "failed";
-        },
-      }
-    ),
-    // Fetch access token and current user details from the API and set them in the state
-    setVerifyUserAsync: create.asyncThunk(
-      async (data: IVerifyUser) => {
-        const response = await verify(data);
-        // The value we return becomes the `fulfilled` action payload
-        return response;
-      },
-      {
-        pending: (state) => {
-          state.status = "loading";
-        },
-        fulfilled: (state) => {
-          state.status = "verified";
-        },
-        rejected: (state) => {
-          state.status = "failed";
-        },
-      }
-    ),
+export const authApiSlice = createApi({
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/auth`,
   }),
-  // Selectors
-  selectors: {
-    selectCurrentUser: (Auth) => Auth.currentUser,
-    selectStatus: (Auth) => Auth.status,
-  },
+  reducerPath: "authApi",
+  // Tag types are used for caching and invalidation.
+  tagTypes: ["Auth"],
+  endpoints: (build) => ({
+    // Supply generics for the return type (in this case `QuotesApiResponse`)
+    // and the expected query argument. If there is no argument, use `void`
+    // for the argument type instead.
+    login: build.mutation<{ data: IAuthUser; status: number }, ILoginPayload>({
+      query: (loginCredentials) => ({
+        url: "/login",
+        method: "POST",
+        body: loginCredentials,
+      }),
+    }),
+    verifyUser: build.mutation<
+      { message: string; status: number },
+      IVerifyUser
+    >({
+      query: (verifyCredentials) => ({
+        url: "/verify-user",
+        method: "POST",
+        body: verifyCredentials,
+      }),
+    }),
+    forgetPassword: build.mutation<
+      { message: string; status: number },
+      { email: string }
+    >({
+      query: (emailBody) => ({
+        url: "/forget-password",
+        method: "POST",
+        body: emailBody,
+      }),
+    }),
+    resetPassword: build.mutation<
+      { message: string; status: number },
+      IResetPassword
+    >({
+      query: (resetPasswordCredentials) => ({
+        url: "/reset-password",
+        method: "POST",
+        body: resetPasswordCredentials,
+      }),
+    }),
+  }),
 });
 
-// Action creators are generated for each case reducer function.
-export const { setCurrentUserAsync, setVerifyUserAsync } = authSlice.actions;
-
-// Selectors returned by `slice.selectors` take the root state as their first argument.
-export const { selectCurrentUser, selectStatus } = authSlice.selectors;
+// Exporting the `login` endpoint directly
+export const {
+  useLoginMutation,
+  useVerifyUserMutation,
+  useForgetPasswordMutation,
+  useResetPasswordMutation,
+} = authApiSlice;

@@ -1,0 +1,8 @@
+.react-tabs__tab-list {
+  border-color: rgb(0 121 67 / var(--tw-text-opacity));
+}
+
+.react-tabs__tab.react-tabs__tab--selected {
+  border-color: rgb(0 121 67 / var(--tw-text-opacity));
+  font-weight: 500;
+}

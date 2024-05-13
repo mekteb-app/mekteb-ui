@@ -1,11 +1,24 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { usersSlice } from "./features/users/usersSlice";
-import { authSlice } from "./features/auth/authSlice";
+import { errorsSlice } from "./features/error/errorSlice";
+import { currentUserSlice } from "./features/currentUser/currentUserSlice";
+import { authApiSlice } from "./features/auth/authSlice";
+import { childrenSlice } from "./features/children/childrenSlice";
+import { communitySlice } from "./features/community/communitySlice";
+import { quickviewSlice } from "./features/quickview/quickviewSlice";
 
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
-const rootReducer = combineSlices(usersSlice, authSlice);
+const rootReducer = combineSlices(
+  usersSlice,
+  errorsSlice,
+  currentUserSlice,
+  authApiSlice,
+  childrenSlice,
+  communitySlice,
+  quickviewSlice
+);
 // Infer the `RootState` type from the root reducer
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -19,7 +32,7 @@ export const makeStore = () => {
     // Adding the api middleware enables caching, invalidation, polling,
     // and other useful features of `rtk-query`.
     middleware: (getDefaultMiddleware) => {
-      return getDefaultMiddleware();
+      return getDefaultMiddleware().concat(authApiSlice.middleware);
     },
   });
 };

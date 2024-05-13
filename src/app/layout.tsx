@@ -1,11 +1,12 @@
 "use client";
-import "flatpickr/dist/flatpickr.min.css";
 import "@/css/satoshi.css";
 import "@/css/style.css";
+import "react-toastify/dist/ReactToastify.css";
 import { ReactNode, memo, useMemo, useState } from "react";
 import Head from "next/head";
 import { StoreProvider } from "./StoreProvider";
 import SessionProvider from "../components/lib/JWTSessionProvider";
+import { ToastContainer } from "react-toastify";
 
 interface Props {
   readonly children: ReactNode;
@@ -17,8 +18,8 @@ const RootLayout = ({ children }: Props) => {
   const memoizedChildren = useMemo(() => children, [children]);
 
   return (
-    <SessionProvider>
-      <StoreProvider>
+    <StoreProvider>
+      <SessionProvider>
         <html lang="en">
           <Head>
             <link rel="icon" href="./favicon.ico" />
@@ -30,10 +31,11 @@ const RootLayout = ({ children }: Props) => {
             <div className="dark:bg-boxdark-2 dark:text-bodydark">
               {memoizedChildren}
             </div>
+            <ToastContainer position="bottom-right" />
           </body>
         </html>
-      </StoreProvider>
-    </SessionProvider>
+      </SessionProvider>
+    </StoreProvider>
   );
 };
 export default memo(RootLayout);
