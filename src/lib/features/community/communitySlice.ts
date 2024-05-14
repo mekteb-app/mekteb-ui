@@ -1,15 +1,18 @@
 import { createAppSlice } from "@/lib/createAppSlice";
-import { fetchCommunityOptions } from "./communityAPI";
+import { fetchCommunities, fetchCommunityOptions } from "./communityAPI";
 import { ICommunity } from "@/interfaces/ICommunity";
+import { ICommunityOption } from "@/interfaces/ICommunityOption";
 
 export interface CommunitySliceState {
-  communityOptions: ICommunity[];
+  communities: ICommunity[];
+  communityOptions: ICommunityOption[];
   status: "idle" | "loading" | "failed";
   count: number;
   error: any;
 }
 
 const initialState: CommunitySliceState = {
+  communities: [],
   communityOptions: [],
   status: "idle",
   count: 0,
@@ -23,7 +26,31 @@ export const communitySlice = createAppSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: (create) => ({
-    // Fetche users from the API and set them in the state
+    // Fetch communities from the API and set them in the state
+    setCommunitiesAsync: create.asyncThunk(
+      async (page = 1) => {
+        const response = await fetchCommunities({ page, count: 10 });
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+          state.error = undefined;
+        },
+        fulfilled: (state, action) => {
+          state.status = "idle";
+          state.error = undefined;
+          state.communities = action.payload.data || [];
+          state.count = action.payload.count || 0;
+        },
+        rejected: (state, action) => {
+          state.status = "failed";
+          state.error = action.error;
+        },
+      }
+    ),
+    // Fetch community options from the API and set them in the state
     setCommunityOptionsAsync: create.asyncThunk(
       async () => {
         const response = await fetchCommunityOptions();
@@ -39,7 +66,6 @@ export const communitySlice = createAppSlice({
           state.status = "idle";
           state.error = undefined;
           state.communityOptions = action.payload.data || [];
-          state.count = action.payload.count || 0;
         },
         rejected: (state, action) => {
           state.status = "failed";
@@ -61,19 +87,27 @@ export const communitySlice = createAppSlice({
   }),
   // Selectors
   selectors: {
+    selectCommunities: (Community) => Community.communities || [],
     selectCommunityOptions: (Community) => Community.communityOptions || [],
+    selectCommunitiesCount: (Community) => Community.count || 0,
     selectCommunityStatus: (Community) => Community.status || "idle",
     selectCommunityError: (Community) => Community.error || undefined,
   },
 });
 
 // Action creators are generated for each case reducer function.
-export const { setCommunityOptionsAsync, resetError, resetCommunityState } =
-  communitySlice.actions;
+export const {
+  setCommunitiesAsync,
+  setCommunityOptionsAsync,
+  resetError,
+  resetCommunityState,
+} = communitySlice.actions;
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
 export const {
+  selectCommunities,
   selectCommunityOptions,
+  selectCommunitiesCount,
   selectCommunityStatus,
   selectCommunityError,
 } = communitySlice.selectors;
