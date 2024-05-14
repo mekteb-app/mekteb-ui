@@ -11,6 +11,7 @@ export interface IUser {
   role: Role;
   phone: string;
   birthdate: string;
+  social_security_number: string;
   status: Status;
   created_at: string;
   updated_at: string;

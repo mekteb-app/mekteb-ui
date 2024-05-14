@@ -29,6 +29,7 @@ const initialChild: IChildPayload = {
   nivo: undefined,
   parentIds: [],
   communityId: undefined,
+  social_security_number: "",
 };
 interface ChildFormProps {
   open: boolean;
@@ -108,6 +109,7 @@ const ChildForm: React.FC<ChildFormProps> = ({ open, onClose, child }) => {
       setValue("first_name", child.first_name);
       setValue("last_name", child.last_name);
       setValue("birthdate", child.birthdate);
+      setValue("social_security_number", child.social_security_number);
       setValue("nivo", child.nivo);
       setValue("communityId", child.community?.id);
       setValue("parentIds", (child?.parents || []).map((p) => p.id) || []);
@@ -185,6 +187,31 @@ const ChildForm: React.FC<ChildFormProps> = ({ open, onClose, child }) => {
                 </div>
 
                 <div className="w-full lg:w-1/2">
+                  <label className="mb-3 block text-sm font-medium text-black ">
+                    Social security number
+                  </label>
+                  <input
+                    {...register("social_security_number", {
+                      required: true,
+                      pattern: {
+                        value: /^[0-9]{8}-[0-9]{4}$/, // Regular expression for a valid social security number format
+                        message:
+                          "Enter a valid social security number (e.g., 12345678-1234)", // Error message if validation fails
+                      },
+                    })}
+                    placeholder="Enter social security number"
+                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
+                  />
+                  {errors?.social_security_number && (
+                    <FormItemError>
+                      {errors?.social_security_number?.message ||
+                        "Social security is required"}
+                    </FormItemError>
+                  )}
+                </div>
+              </div>
+              <div className="flex mb-4.5 flex-col gap-6 lg:flex-row">
+                <div className="w-full lg:w-1/2">
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                     Nivo
                   </label>
@@ -208,31 +235,6 @@ const ChildForm: React.FC<ChildFormProps> = ({ open, onClose, child }) => {
                     <FormItemError>Nivo is required.</FormItemError>
                   )}
                 </div>
-              </div>
-
-              <div className="flex mb-4.5 flex-col gap-6 lg:flex-row">
-                <div
-                  className={`w-full ${currentUser?.role !== Role.SuperAdmin ? "" : "lg:w-1/2"}`}
-                >
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Parents
-                  </label>
-                  <Controller
-                    name="parentIds"
-                    control={control}
-                    render={({ field }) => (
-                      <AppMultiSelect
-                        {...field}
-                        placeholder="Select parents"
-                        options={userOptionValues}
-                        value={userOptionValues.filter((option) =>
-                          (getValues()?.parentIds ?? []).includes(option.value)
-                        )}
-                      />
-                    )}
-                  />
-                </div>
-
                 {currentUser?.role === Role.SuperAdmin && (
                   <div className="w-full lg:w-1/2">
                     <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -259,6 +261,28 @@ const ChildForm: React.FC<ChildFormProps> = ({ open, onClose, child }) => {
                     )}
                   </div>
                 )}
+              </div>
+
+              <div className="flex mb-4.5 flex-col gap-6 lg:flex-row">
+                <div className="w-full">
+                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                    Parents
+                  </label>
+                  <Controller
+                    name="parentIds"
+                    control={control}
+                    render={({ field }) => (
+                      <AppMultiSelect
+                        {...field}
+                        placeholder="Select parents"
+                        options={userOptionValues}
+                        value={userOptionValues.filter((option) =>
+                          (getValues()?.parentIds ?? []).includes(option.value)
+                        )}
+                      />
+                    )}
+                  />
+                </div>
               </div>
 
               <button

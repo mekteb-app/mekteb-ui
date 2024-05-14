@@ -34,6 +34,7 @@ const initialChild: IChildPayload = {
   last_name: "",
   birthdate: "",
   nivo: undefined,
+  social_security_number: "",
 };
 
 const UserForm: React.FC<UserFormProps> = ({ open, onClose, user }) => {
@@ -126,6 +127,7 @@ const UserForm: React.FC<UserFormProps> = ({ open, onClose, user }) => {
       setValue("email", user.email);
       setValue("phone", user.phone);
       setValue("birthdate", user.birthdate);
+      setValue("social_security_number", user.social_security_number);
       setValue("communityId", user.community?.id);
       setValue("role", user.role);
       setValue("childrenIds", user?.children?.map((c) => c.id) || []);
@@ -234,68 +236,84 @@ const UserForm: React.FC<UserFormProps> = ({ open, onClose, user }) => {
                 </div>
 
                 <div className="w-full lg:w-1/2">
-                  {currentUser?.role === Role.SuperAdmin && (
-                    <>
-                      <label className="mb-3 block text-sm font-medium text-black ">
-                        Community
-                      </label>
-                      {/* Community */}
-                      <Controller
-                        name="communityId"
-                        control={control}
-                        rules={{ required: true }}
-                        render={({ field }) => (
-                          <AppSelect
-                            placeholder="Select community"
-                            options={communityOptionValues}
-                            {...field}
-                            value={communityOptionValues.find(
-                              ({ value }) => getValues()?.communityId === value
-                            )}
-                          />
-                        )}
-                      />
-                      {errors.communityId && (
-                        <FormItemError>Community is required.</FormItemError>
-                      )}
-                    </>
+                  <label className="mb-3 block text-sm font-medium text-black ">
+                    Social security number
+                  </label>
+                  <input
+                    {...register("social_security_number" as const, {
+                      required: true,
+                      pattern: {
+                        value: /^[0-9]{8}-[0-9]{4}$/, // Regular expression for a valid social security number format
+                        message:
+                          "Enter a valid social security number (e.g., 12345678-1234)", // Error message if validation fails
+                      },
+                    })}
+                    placeholder="Enter social security number"
+                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
+                  />
+                  {errors?.social_security_number && (
+                    <FormItemError>
+                      {errors?.social_security_number?.message ||
+                        "Social security is required."}
+                    </FormItemError>
                   )}
                 </div>
               </div>
 
-              <div className="flex mb-4.5 flex-col gap-6 lg:flex-row">
-                <div className="w-full lg:w-1/2">
-                  {currentUser?.role === Role.SuperAdmin && (
-                    <>
-                      <label className="mb-3 block text-sm font-medium text-black ">
-                        Role
-                      </label>
-                      {/* Role */}
-                      <Controller
-                        name="role"
-                        control={control}
-                        rules={{ required: true }}
-                        render={({ field }) => (
-                          <AppSelect
-                            {...field}
-                            placeholder="Select role"
-                            options={roleOptions}
-                            formatValue={(val) => +val}
-                            value={roleOptions.find(
-                              (r) => r.value === getValues()?.role
-                            )}
-                          />
-                        )}
-                      />
-                      {errors.role && (
-                        <FormItemError>Role is required.</FormItemError>
+              {currentUser?.role === Role.SuperAdmin && (
+                <div className="flex mb-4.5 flex-col gap-6 lg:flex-row">
+                  <div className="w-full lg:w-1/2">
+                    <label className="mb-3 block text-sm font-medium text-black ">
+                      Role
+                    </label>
+                    {/* Role */}
+                    <Controller
+                      name="role"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) => (
+                        <AppSelect
+                          {...field}
+                          placeholder="Select role"
+                          options={roleOptions}
+                          formatValue={(val) => +val}
+                          value={roleOptions.find(
+                            (r) => r.value === getValues()?.role
+                          )}
+                        />
                       )}
-                    </>
-                  )}
-                </div>
+                    />
+                    {errors.role && (
+                      <FormItemError>Role is required.</FormItemError>
+                    )}
+                  </div>
 
-                <div className="w-full lg:w-1/2" />
-              </div>
+                  <div className="w-full lg:w-1/2">
+                    <label className="mb-3 block text-sm font-medium text-black ">
+                      Community
+                    </label>
+                    {/* Community */}
+                    <Controller
+                      name="communityId"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) => (
+                        <AppSelect
+                          placeholder="Select community"
+                          options={communityOptionValues}
+                          {...field}
+                          value={communityOptionValues.find(
+                            ({ value }) => getValues()?.communityId === value
+                          )}
+                        />
+                      )}
+                    />
+                    {errors.communityId && (
+                      <FormItemError>Community is required.</FormItemError>
+                    )}
+                  </div>
+                </div>
+              )}
 
               <div className="flex mb-4.5 flex-col gap-6 lg:flex-row">
                 <div className="w-full">
@@ -421,6 +439,36 @@ const UserForm: React.FC<UserFormProps> = ({ open, onClose, user }) => {
                             </div>
                             <div className="w-full lg:w-1/2">
                               <label className="mb-3 block text-sm font-medium text-black ">
+                                Social security number
+                              </label>
+                              <input
+                                {...register(
+                                  `newChildren.${index}.social_security_number` as const,
+                                  {
+                                    required: true,
+                                    pattern: {
+                                      value: /^[0-9]{8}-[0-9]{4}$/, // Regular expression for a valid social security number format
+                                      message:
+                                        "Enter a valid social security number (e.g., 12345678-1234)", // Error message if validation fails
+                                    },
+                                  }
+                                )}
+                                placeholder="Enter social security number"
+                                className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
+                              />
+                              {errors.newChildren?.[index]
+                                ?.social_security_number && (
+                                <FormItemError>
+                                  {errors.newChildren?.[index]
+                                    ?.social_security_number?.message ||
+                                    "Social security is required"}
+                                </FormItemError>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex mb-4.5 flex-col gap-6 lg:flex-row">
+                            <div className="w-full lg:w-1/2">
+                              <label className="mb-3 block text-sm font-medium text-black ">
                                 Nivo
                               </label>
                               <Controller
@@ -443,6 +491,7 @@ const UserForm: React.FC<UserFormProps> = ({ open, onClose, user }) => {
                                 <FormItemError>Nivo is required.</FormItemError>
                               )}
                             </div>
+                            <div className="w-full lg:w-1/2" />
                           </div>
                         </div>
                       </div>

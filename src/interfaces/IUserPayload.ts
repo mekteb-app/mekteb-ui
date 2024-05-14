@@ -7,6 +7,7 @@ export interface IUserPayload {
   role: number;
   phone: string;
   birthdate: string;
+  social_security_number: string;
   newChildren: IChildPayload[];
   childrenIds: string[];
   communityId?: string;

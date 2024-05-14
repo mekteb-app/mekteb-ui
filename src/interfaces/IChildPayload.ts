@@ -7,4 +7,5 @@ export interface IChildPayload {
   nivo: Nivo | undefined;
   parentIds?: string[];
   communityId?: string;
+  social_security_number: string;
 }

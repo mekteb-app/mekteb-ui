@@ -13,6 +13,7 @@ export interface IChild {
   first_name: string;
   last_name: string;
   birthdate: string;
+  social_security_number: string;
   nivo: Nivo;
   status: Status;
   created_at: string;
