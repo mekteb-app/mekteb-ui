@@ -7,6 +7,7 @@ import { authApiSlice } from "./features/auth/authSlice";
 import { childrenSlice } from "./features/children/childrenSlice";
 import { communitySlice } from "./features/community/communitySlice";
 import { quickviewSlice } from "./features/quickview/quickviewSlice";
+import { lessonSlice } from "./features/lessons/lessonsSlice";
 
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
@@ -17,7 +18,8 @@ const rootReducer = combineSlices(
   authApiSlice,
   childrenSlice,
   communitySlice,
-  quickviewSlice
+  quickviewSlice,
+  lessonSlice
 );
 // Infer the `RootState` type from the root reducer
 export type RootState = ReturnType<typeof rootReducer>;
