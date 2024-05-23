@@ -4,6 +4,7 @@ import CustomError from "@/types/custom-error";
 import { IChild } from "@/interfaces/IChild";
 import { IChildPayload } from "@/interfaces/IChildPayload";
 import { IChildOption } from "@/interfaces/IChildOption";
+import { IChildLesson } from "@/interfaces/IChildLesson";
 
 interface IChildrenResponse {
   data: IChild[];
@@ -26,6 +27,12 @@ interface IChildResponse {
 
 interface IChildResponse {
   data: IChild;
+  message: string;
+  status: number;
+}
+
+interface IChildLessonsResponse {
+  data: IChildLesson[];
   message: string;
   status: number;
 }
@@ -117,6 +124,25 @@ export const removeChild = async (id: string) => {
     {}
   );
   const result: IChildResponse = await response.json();
+
+  if (response.status !== 200) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
+
+  return result;
+};
+
+export const updateChildLessons = async (data: {
+  lessons: IChildLessonPayload[];
+}) => {
+  const response = await baseApiCallBody(
+    `${process.env.NEXT_PUBLIC_API_URL}/child-lesson`,
+    "POST",
+    {},
+    data
+  );
+  const result: IChildLessonsResponse = await response.json();
 
   if (response.status !== 200) {
     const customError = new CustomError(result.message, response.status);

@@ -1,12 +1,10 @@
 import AppDatePicker from "@/components/FormElements/DatePicker/DatePicker";
 import FormItemError from "@/components/FormElements/FormItemError";
-import CreateUserIcon from "@/components/Icons/create-user";
 import AppModal from "@/components/Modal";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { IChildPayload } from "../../../interfaces/IChildPayload";
-import { Nivo } from "@/enums/nivo";
 import AppSelect from "@/components/FormElements/Select";
 import { subYears } from "date-fns";
 import {

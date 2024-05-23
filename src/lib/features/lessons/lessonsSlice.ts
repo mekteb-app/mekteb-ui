@@ -25,8 +25,8 @@ export const lessonSlice = createAppSlice({
   reducers: (create) => ({
     // Fetch lessons from the API and set them in the state
     setLessonsAsync: create.asyncThunk(
-      async (page = 1) => {
-        const response = await fetchLessons({ page, count: 10 });
+      async ({ page = 1, count = 10, filters }) => {
+        const response = await fetchLessons({ page, count, filters });
         // The value we return becomes the `fulfilled` action payload
         return response;
       },

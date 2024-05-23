@@ -7,11 +7,14 @@ import {
   getChild,
   removeChild,
   updateChild,
+  updateChildLessons,
 } from "./childrenAPI";
 import { IChildPayload } from "@/interfaces/IChildPayload";
 import { toast } from "react-toastify";
 import { IError } from "@/interfaces/IError";
 import { IChildOption } from "@/interfaces/IChildOption";
+import { mergeArrays } from "@/utils/array";
+import { IChildLesson } from "@/interfaces/IChildLesson";
 
 export interface ChildrenSliceState {
   children: IChild[];
@@ -178,6 +181,36 @@ export const childrenSlice = createAppSlice({
       }
     ),
 
+    updateChildLessonsAsync: create.asyncThunk(
+      async (lessons: IChildLessonPayload[]) => {
+        const response = await updateChildLessons({ lessons });
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.status = "idle";
+          state.child = state.child
+            ? {
+                ...(state?.child ?? {}),
+                childLessons: mergeArrays(
+                  state.child?.childLessons ?? [],
+                  action.payload.data
+                ) as IChildLesson[],
+              }
+            : undefined;
+          toast.success("Child lessons updated successfully");
+        },
+        rejected: (state, action) => {
+          state.status = "failed";
+          state.error = action.error as IError;
+        },
+      }
+    ),
+
     resetError: create.reducer((state) => {
       state.error = undefined;
     }),
@@ -214,6 +247,7 @@ export const {
   createChildAsync,
   updateChildAsync,
   removeChildAsync,
+  updateChildLessonsAsync,
   resetError,
   resetChildState,
   resetChildrenState,

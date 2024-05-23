@@ -22,11 +22,11 @@ table.quickview-content td {
 }
 
 table.quickview-content th:first-child {
-  width: 40%;
+  width: 30%;
 }
 
 table.quickview-content th:nth-child(2) {
-  width: 60%;
+  width: 70%;
 }
 
 table.quickview-content td:first-child {

@@ -1,6 +1,7 @@
 import { Nivo } from "@/enums/nivo";
 import { ICommunity } from "./ICommunity";
 import { Status } from "@/enums/status";
+import { IChildLesson } from "./IChildLesson";
 
 interface IParent {
   id: string;
@@ -20,4 +21,5 @@ export interface IChild {
   updated_at: string;
   community?: ICommunity;
   parents?: IParent[];
+  childLessons: IChildLesson[];
 }

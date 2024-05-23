@@ -10,6 +10,7 @@ import {
   setChildAsync,
   setChildrenAsync,
   setChildrenOptionsAsync,
+  updateChildLessonsAsync,
 } from "@/lib/features/children/childrenSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useEffect } from "react";
@@ -19,7 +20,7 @@ import { IChildOption } from "@/interfaces/IChildOption";
 
 const useChildren = (): {
   children: IChild[];
-  child: IChild | any;
+  child: IChild | undefined;
   childrenOptions: IChildOption[];
   count: number;
   getChildren: (page?: number) => Promise<void>;
@@ -27,6 +28,7 @@ const useChildren = (): {
   removeChild: (id: string) => Promise<void>;
   getChildrenOptions: () => Promise<void>;
   resetChildDetails: () => void;
+  updateChildLessons: (lessons: IChildLessonPayload[]) => Promise<void>;
 } => {
   const dispatch = useAppDispatch();
   const { setError } = useErrorHandling();
@@ -77,6 +79,14 @@ const useChildren = (): {
     }
   };
 
+  const updateChildLessons = async (lessons: IChildLessonPayload[]) => {
+    try {
+      await dispatch(updateChildLessonsAsync(lessons));
+    } catch (error) {
+      setError(error as any);
+    }
+  };
+
   useEffect(() => {
     if (error) {
       setError(error);
@@ -97,6 +107,7 @@ const useChildren = (): {
     removeChild,
     getChildrenOptions,
     resetChildDetails,
+    updateChildLessons,
   };
 };
 

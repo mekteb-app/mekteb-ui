@@ -49,7 +49,7 @@ const Quickview: React.FC = () => {
   return quickviews.length ? (
     <>
       <div
-        className="absolute left-0 top-0 z-9999 h-screen lg:w-1/2 quickviews-active"
+        className="absolute left-0 top-0 z-999 h-screen lg:w-1/2 quickviews-active"
         style={{
           background: "linear-gradient(rgb(0 0 0 / 20%), rgb(0 0 0 / 20%))",
         }}

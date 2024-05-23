@@ -9,11 +9,16 @@ import {
   selectLessonsCount,
   setLessonsAsync,
 } from "@/lib/features/lessons/lessonsSlice";
+import { Nivo } from "@/enums/nivo";
 
 const useLessons = (): {
   lessons: ILesson[];
   count: number;
-  getLessons: (page?: number) => Promise<void>;
+  getLessons: (
+    page?: number,
+    count?: number,
+    filters?: { nivo?: Nivo }
+  ) => Promise<void>;
 } => {
   const dispatch = useAppDispatch();
   const { setError } = useErrorHandling();
@@ -22,9 +27,13 @@ const useLessons = (): {
   const count = useAppSelector(selectLessonsCount) || 0;
   const error = useAppSelector(selectLessonError);
 
-  const getLessons = async (page = 1) => {
+  const getLessons = async (
+    page = 1,
+    count = 10,
+    filters?: { nivo?: Nivo }
+  ) => {
     try {
-      await dispatch(setLessonsAsync(page));
+      await dispatch(setLessonsAsync({ page, count, filters }));
     } catch (error) {
       setError(error as any);
     }

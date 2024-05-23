@@ -1,7 +1,7 @@
 import { Nivo as NivoEnum } from "@/enums/nivo";
 
 interface Props {
-  nivo: NivoEnum;
+  nivo: NivoEnum | undefined;
 }
 
 const Nivo = ({ nivo }: Props) => (
@@ -12,7 +12,7 @@ const Nivo = ({ nivo }: Props) => (
         style={{ width: `${nivo ? 120 / (5 / +nivo) : 0}px` }}
       >
         <p className="my-auto text-center text-[10px] font-bold leading-none text-white">
-          {nivo}
+          {nivo ?? ""}
         </p>
       </div>
     </div>
