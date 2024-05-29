@@ -2,6 +2,7 @@ import React from "react";
 
 interface IAppSwitchProps {
   id?: string | undefined;
+  label?: string;
   checked: boolean;
   disabled?: boolean;
   onChange: (value: boolean) => void;
@@ -9,6 +10,7 @@ interface IAppSwitchProps {
 
 const AppSwitch: React.FC<IAppSwitchProps> = ({
   id = "app-switch",
+  label = "",
   checked = false,
   disabled = false,
   onChange,
@@ -17,7 +19,7 @@ const AppSwitch: React.FC<IAppSwitchProps> = ({
     <div>
       <label
         htmlFor={id}
-        className={`flex ${!disabled ? "cursor-pointer" : "cursor-default bg-whiter"} select-none items-center`}
+        className={`flex ${!disabled ? "cursor-pointer" : "cursor-default"} select-none items-center`}
       >
         <div className="relative">
           <input
@@ -70,6 +72,7 @@ const AppSwitch: React.FC<IAppSwitchProps> = ({
             </span>
           </div>
         </div>
+        {label}
       </label>
     </div>
   );

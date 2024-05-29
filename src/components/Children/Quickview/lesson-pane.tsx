@@ -15,6 +15,7 @@ type IChildLessonItem = {
   passed: boolean;
   childId: string;
   lessonId: string;
+  attended: boolean;
 };
 
 const LessonsPane: React.FC = () => {
@@ -41,6 +42,7 @@ const LessonsPane: React.FC = () => {
       lessonId: lesson.id,
       comment: changedChildLesson?.comment ?? childLesson?.comment ?? "",
       passed: changedChildLesson?.passed ?? childLesson?.passed ?? false,
+      attended: changedChildLesson?.attended ?? childLesson?.attended ?? false,
     };
   };
 
@@ -77,6 +79,10 @@ const LessonsPane: React.FC = () => {
                 key === "passed"
                   ? (value as boolean)
                   : childLesson?.passed ?? false,
+              attended:
+                key === "attended"
+                  ? (value as boolean)
+                  : childLesson?.attended ?? false,
             },
           ];
           return updatedLessons;
@@ -112,38 +118,64 @@ const LessonsPane: React.FC = () => {
         <td>{lesson.title}</td>
         <td>
           <div className="lg:flex items-center">
-            <AppSwitch
-              id={lesson?.id}
-              checked={childLessonItem.passed}
-              disabled={!isEditMode}
-              onChange={(value: boolean) =>
-                isAdmin &&
-                isEditMode &&
-                updateChildLesson(lesson?.id, childLessonItem, "passed", value)
-              }
-            />
-            {isAdmin ? (
-              <div className="ml-1 mt-2 lg:mt-0 lg:ml-4 w-full">
-                <AppTextarea
-                  value={childLessonItem.comment}
-                  disabled={!isEditMode}
-                  rows={1}
-                  onChange={(value: string) =>
-                    updateChildLesson(
-                      lesson?.id,
-                      childLessonItem,
-                      "comment",
-                      value
-                    )
-                  }
-                />
-              </div>
-            ) : (
-              <div className="ml-1 mt-2 lg:mt-0 lg:ml-4 sm:w-full">
-                {childLessonItem.comment}
-              </div>
-            )}
+            <div>
+              <AppSwitch
+                id={`passed-${lesson?.id}`}
+                checked={childLessonItem.passed}
+                disabled={!isEditMode}
+                label="Passed"
+                onChange={(value: boolean) =>
+                  isAdmin &&
+                  isEditMode &&
+                  updateChildLesson(
+                    lesson?.id,
+                    childLessonItem,
+                    "passed",
+                    value
+                  )
+                }
+              />
+            </div>
+            <div className="ml-0 mt-2 lg:mt-0 lg:ml-4">
+              <AppSwitch
+                id={`attendance-${lesson?.id}`}
+                checked={childLessonItem.attended}
+                disabled={!isEditMode}
+                label="Attended"
+                onChange={(value: boolean) =>
+                  isAdmin &&
+                  isEditMode &&
+                  updateChildLesson(
+                    lesson?.id,
+                    childLessonItem,
+                    "attended",
+                    value
+                  )
+                }
+              />
+            </div>
           </div>
+          {isAdmin ? (
+            <div className="lg:flex items-center mt-2 w-full">
+              <AppTextarea
+                value={childLessonItem.comment}
+                disabled={!isEditMode}
+                rows={1}
+                onChange={(value: string) =>
+                  updateChildLesson(
+                    lesson?.id,
+                    childLessonItem,
+                    "comment",
+                    value
+                  )
+                }
+              />
+            </div>
+          ) : (
+            <div className="ml-1 mt-2 lg:mt-0 lg:ml-4 sm:w-full">
+              {childLessonItem.comment}
+            </div>
+          )}
         </td>
       </tr>
     );
@@ -158,7 +190,7 @@ const LessonsPane: React.FC = () => {
   return (
     <div>
       {isAdmin && (
-        <div className="flex justify-end gap-3 mb-2">
+        <div className="flex justify-end gap-3 pb-2 w-full bg-white position-sticky-top">
           {isEditMode ? (
             <>
               <button

@@ -9,5 +9,6 @@ export interface IChildLesson {
   updated_at?: string;
   lesson: ILesson;
   passed: boolean;
+  attended: boolean;
   mark?: number;
 }

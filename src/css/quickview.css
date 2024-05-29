@@ -46,3 +46,9 @@ table.quickview-content td:nth-child(2) {
   margin-left: 0.5rem;
   border-right: 0;
 }
+
+.position-sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}

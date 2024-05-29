@@ -4,4 +4,5 @@ interface IChildLessonPayload {
   childId: string;
   comment: string;
   passed: boolean;
+  attended: boolean;
 }
