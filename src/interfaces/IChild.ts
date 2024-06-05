@@ -23,3 +23,11 @@ export interface IChild {
   parents?: IParent[];
   childLessons: IChildLesson[];
 }
+
+export interface IChildWithLesson {
+  id: string;
+  first_name: string;
+  last_name: string;
+  nivo: Nivo;
+  childLessons?: IChildLesson[];
+}

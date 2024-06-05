@@ -1,29 +1,34 @@
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useEffect } from "react";
 import useErrorHandling from "./useErrorHandling";
-import { ILesson } from "@/interfaces/ILesson";
+import { ILesson, ILessonOption } from "@/interfaces/ILesson";
 import {
   resetError,
   selectLessonError,
+  selectLessonOptions,
   selectLessons,
   selectLessonsCount,
+  setLessonOptionsAsync,
   setLessonsAsync,
 } from "@/lib/features/lessons/lessonsSlice";
 import { Nivo } from "@/enums/nivo";
 
 const useLessons = (): {
   lessons: ILesson[];
+  lessonOptions: ILessonOption[];
   count: number;
   getLessons: (
     page?: number,
     count?: number,
     filters?: { nivo?: Nivo }
   ) => Promise<void>;
+  getLessonOptions: (filters?: { nivo?: Nivo }) => Promise<void>;
 } => {
   const dispatch = useAppDispatch();
   const { setError } = useErrorHandling();
 
   const lessons = useAppSelector(selectLessons) || [];
+  const lessonOptions = useAppSelector(selectLessonOptions) || [];
   const count = useAppSelector(selectLessonsCount) || 0;
   const error = useAppSelector(selectLessonError);
 
@@ -34,6 +39,14 @@ const useLessons = (): {
   ) => {
     try {
       await dispatch(setLessonsAsync({ page, count, filters }));
+    } catch (error) {
+      setError(error as any);
+    }
+  };
+
+  const getLessonOptions = async (filters?: { nivo?: Nivo }) => {
+    try {
+      await dispatch(setLessonOptionsAsync({ filters }));
     } catch (error) {
       setError(error as any);
     }
@@ -51,8 +64,10 @@ const useLessons = (): {
 
   return {
     lessons,
+    lessonOptions,
     count,
     getLessons,
+    getLessonOptions,
   };
 };
 

@@ -7,28 +7,36 @@ import {
   selectChildrenCount,
   selectChildrenError,
   selectChildrenOptions,
+  selectChildrenWithLessons,
   setChildAsync,
   setChildrenAsync,
   setChildrenOptionsAsync,
+  setChildrenWithLessonsAsync,
   updateChildLessonsAsync,
 } from "@/lib/features/children/childrenSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useEffect } from "react";
 import useErrorHandling from "./useErrorHandling";
-import { IChild } from "@/interfaces/IChild";
+import { IChild, IChildWithLesson } from "@/interfaces/IChild";
 import { IChildOption } from "@/interfaces/IChildOption";
+import { IPagination } from "@/interfaces/IPagination";
 
 const useChildren = (): {
   children: IChild[];
   child: IChild | undefined;
   childrenOptions: IChildOption[];
+  childrenWithLessons: IChildWithLesson[];
   count: number;
   getChildren: (page?: number) => Promise<void>;
   getChildDetails: (id: string) => Promise<void>;
   removeChild: (id: string) => Promise<void>;
-  getChildrenOptions: () => Promise<void>;
+  getChildrenOptions: (data?: IPagination) => Promise<void>;
   resetChildDetails: () => void;
   updateChildLessons: (lessons: IChildLessonPayload[]) => Promise<void>;
+  getChildrenWithLessons: (
+    lessonId: string,
+    data: IPagination
+  ) => Promise<void>;
 } => {
   const dispatch = useAppDispatch();
   const { setError } = useErrorHandling();
@@ -36,6 +44,7 @@ const useChildren = (): {
   const children = useAppSelector(selectChildren) || [];
   const child = useAppSelector(selectChild);
   const childrenOptions = useAppSelector(selectChildrenOptions) || [];
+  const childrenWithLessons = useAppSelector(selectChildrenWithLessons) || [];
   const count = useAppSelector(selectChildrenCount) || 0;
   const error = useAppSelector(selectChildrenError);
 
@@ -63,9 +72,9 @@ const useChildren = (): {
     }
   };
 
-  const getChildrenOptions = async () => {
+  const getChildrenOptions = async (data?: IPagination) => {
     try {
-      await dispatch(setChildrenOptionsAsync(null));
+      await dispatch(setChildrenOptionsAsync(data || {}));
     } catch (error) {
       setError(error as any);
     }
@@ -87,6 +96,17 @@ const useChildren = (): {
     }
   };
 
+  const getChildrenWithLessons = async (
+    lessonId: string,
+    data: IPagination
+  ) => {
+    try {
+      await dispatch(setChildrenWithLessonsAsync({ lessonId, data }));
+    } catch (error) {
+      setError(error as any);
+    }
+  };
+
   useEffect(() => {
     if (error) {
       setError(error);
@@ -101,6 +121,7 @@ const useChildren = (): {
     children,
     child,
     childrenOptions,
+    childrenWithLessons,
     count,
     getChildren,
     getChildDetails,
@@ -108,6 +129,7 @@ const useChildren = (): {
     getChildrenOptions,
     resetChildDetails,
     updateChildLessons,
+    getChildrenWithLessons,
   };
 };
 

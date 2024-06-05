@@ -1,11 +1,18 @@
 import { baseApiCall } from "@/lib/baseApiCall";
 import CustomError from "@/types/custom-error";
-import { ILesson } from "@/interfaces/ILesson";
+import { ILesson, ILessonOption } from "@/interfaces/ILesson";
 import { IPagination } from "@/interfaces/IPagination";
 import { generateQueryParams } from "@/utils/query";
 
 interface ILessonResponse {
   data: ILesson[];
+  message: string;
+  status: number;
+  count: number;
+}
+
+interface ILessonOptionResponse {
+  data: ILessonOption[];
   message: string;
   status: number;
   count: number;
@@ -19,6 +26,23 @@ export const fetchLessons = async ({ page, count, filters }: IPagination) => {
     "GET"
   );
   const result: ILessonResponse = await response.json();
+
+  if (response.status !== 200) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
+
+  return result;
+};
+
+// A mock function to mimic making an async request for data
+export const fetchLessonOptions = async ({ filters }: IPagination) => {
+  const queryParams = generateQueryParams(filters);
+  const response = await baseApiCall(
+    `${process.env.NEXT_PUBLIC_API_URL}/lesson/options?${queryParams}`,
+    "GET"
+  );
+  const result: ILessonOptionResponse = await response.json();
 
   if (response.status !== 200) {
     const customError = new CustomError(result.message, response.status);

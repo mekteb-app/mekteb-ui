@@ -21,7 +21,7 @@ const AppSwitch: React.FC<IAppSwitchProps> = ({
         htmlFor={id}
         className={`flex ${!disabled ? "cursor-pointer" : "cursor-default"} select-none items-center`}
       >
-        <div className="relative">
+        <div className="relative mr-1">
           <input
             type="checkbox"
             id={id}

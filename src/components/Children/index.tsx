@@ -16,6 +16,8 @@ import CreateUserIcon from "../Icons/create-user";
 import EditIcon from "../Icons/edit.icon";
 import TrashCanIcon from "../Icons/trash-can.icon";
 import Popover from "../Popover";
+import ChildrenLessonsForm from "./ChildLessonsForm";
+import TaskIcon from "../Icons/task-icon";
 
 const Children: React.FC = () => {
   const currentUser = useAppSelector(selectCurrentUser);
@@ -31,6 +33,8 @@ const Children: React.FC = () => {
   const { onOpenQuickview } = useQuickview();
 
   const [childModalOpen, setChildModalOpen] = useState(false);
+  const [childrenLessonsModalOpen, setChildrenLessonsModalOpen] =
+    useState(false);
 
   const closeChildModal = () => {
     setChildModalOpen(false);
@@ -54,18 +58,34 @@ const Children: React.FC = () => {
             />
           </div>
           <div className="flex">
-            <button
-              className="flex bg-primary px-3 py-2 text-center text-white hover:bg-opacity-90 lg:px-3 xl:px-4 text-sm rounded align-middle items-center"
-              onClick={() => setChildModalOpen(true)}
-            >
-              <CreateUserIcon />
-              <div className="ml-1 hidden lg:block">Create child</div>
-            </button>
-            <ChildForm
-              open={childModalOpen}
-              onClose={closeChildModal}
-              child={child}
-            />
+            <>
+              <button
+                className="flex bg-primary px-3 py-2 text-center text-white hover:bg-opacity-90 lg:px-3 xl:px-4 text-sm rounded align-middle items-center"
+                onClick={() => setChildrenLessonsModalOpen(true)}
+              >
+                <TaskIcon />
+                <div className="ml-1 hidden lg:block">Child lessons</div>
+              </button>
+
+              <ChildrenLessonsForm
+                open={childrenLessonsModalOpen}
+                onClose={() => setChildrenLessonsModalOpen(false)}
+              />
+            </>
+            <>
+              <button
+                className="flex ml-2 bg-primary px-3 py-2 text-center text-white hover:bg-opacity-90 lg:px-3 xl:px-4 text-sm rounded align-middle items-center"
+                onClick={() => setChildModalOpen(true)}
+              >
+                <CreateUserIcon />
+                <div className="ml-1 hidden lg:block">Create child</div>
+              </button>
+              <ChildForm
+                open={childModalOpen}
+                onClose={closeChildModal}
+                child={child}
+              />
+            </>
           </div>
         </div>
         <div className="max-w-full overflow-x-auto mt-4">

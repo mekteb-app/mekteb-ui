@@ -95,7 +95,7 @@ const LessonsPane: React.FC = () => {
   const isAdmin = useMemo(
     () =>
       currentUser?.role &&
-      [(Role.Admin, Role.SuperAdmin)].includes(currentUser?.role),
+      [Role.Admin, Role.SuperAdmin].includes(currentUser?.role),
     [currentUser?.role]
   );
 
@@ -118,41 +118,43 @@ const LessonsPane: React.FC = () => {
         <td>{lesson.title}</td>
         <td>
           <div className="lg:flex items-center">
-            <div>
-              <AppSwitch
-                id={`passed-${lesson?.id}`}
-                checked={childLessonItem.passed}
-                disabled={!isEditMode}
-                label="Passed"
-                onChange={(value: boolean) =>
-                  isAdmin &&
-                  isEditMode &&
-                  updateChildLesson(
-                    lesson?.id,
-                    childLessonItem,
-                    "passed",
-                    value
-                  )
-                }
-              />
-            </div>
-            <div className="ml-0 mt-2 lg:mt-0 lg:ml-4">
-              <AppSwitch
-                id={`attendance-${lesson?.id}`}
-                checked={childLessonItem.attended}
-                disabled={!isEditMode}
-                label="Attended"
-                onChange={(value: boolean) =>
-                  isAdmin &&
-                  isEditMode &&
-                  updateChildLesson(
-                    lesson?.id,
-                    childLessonItem,
-                    "attended",
-                    value
-                  )
-                }
-              />
+            <div className="flex">
+              <div>
+                <AppSwitch
+                  id={`passed-${lesson?.id}`}
+                  checked={childLessonItem.passed}
+                  disabled={!isEditMode}
+                  label="Passed"
+                  onChange={(value: boolean) =>
+                    isAdmin &&
+                    isEditMode &&
+                    updateChildLesson(
+                      lesson?.id,
+                      childLessonItem,
+                      "passed",
+                      value
+                    )
+                  }
+                />
+              </div>
+              <div className="ml-2 lg:ml-4">
+                <AppSwitch
+                  id={`attendance-${lesson?.id}`}
+                  checked={childLessonItem.attended}
+                  disabled={!isEditMode}
+                  label="Attended"
+                  onChange={(value: boolean) =>
+                    isAdmin &&
+                    isEditMode &&
+                    updateChildLesson(
+                      lesson?.id,
+                      childLessonItem,
+                      "attended",
+                      value
+                    )
+                  }
+                />
+              </div>
             </div>
           </div>
           {isAdmin ? (
@@ -172,7 +174,9 @@ const LessonsPane: React.FC = () => {
               />
             </div>
           ) : (
-            <div className="ml-1 mt-2 lg:mt-0 lg:ml-4 sm:w-full">
+            <div
+              className={`lg:flex items-center w-full ${childLessonItem?.comment ? "mt-4" : ""}`}
+            >
               {childLessonItem.comment}
             </div>
           )}

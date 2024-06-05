@@ -4,6 +4,7 @@ import {
   createChild,
   fetchChildren,
   fetchChildrenOptions,
+  fetchChildrenWithLessons,
   getChild,
   removeChild,
   updateChild,
@@ -15,11 +16,14 @@ import { IError } from "@/interfaces/IError";
 import { IChildOption } from "@/interfaces/IChildOption";
 import { mergeArrays } from "@/utils/array";
 import { IChildLesson } from "@/interfaces/IChildLesson";
+import { IPagination } from "@/interfaces/IPagination";
+import { IChildWithLesson } from "../../../interfaces/IChild";
 
 export interface ChildrenSliceState {
   children: IChild[];
   child: IChild | undefined;
   childrenOptions: IChildOption[];
+  childrenLessons: IChildWithLesson[];
   status: "idle" | "loading" | "failed" | "created" | "updated";
   count: number;
   error: any;
@@ -29,6 +33,7 @@ const initialState: ChildrenSliceState = {
   children: [],
   child: undefined,
   childrenOptions: [],
+  childrenLessons: [],
   status: "idle",
   count: 0,
   error: undefined,
@@ -135,8 +140,8 @@ export const childrenSlice = createAppSlice({
     ),
 
     setChildrenOptionsAsync: create.asyncThunk(
-      async () => {
-        const response = await fetchChildrenOptions();
+      async (data: IPagination) => {
+        const response = await fetchChildrenOptions(data);
         // The value we return becomes the `fulfilled` action payload
         return response;
       },
@@ -211,6 +216,29 @@ export const childrenSlice = createAppSlice({
       }
     ),
 
+    setChildrenWithLessonsAsync: create.asyncThunk(
+      async ({ lessonId, data }: { lessonId: string; data: IPagination }) => {
+        const response = await fetchChildrenWithLessons(lessonId, data);
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+          state.error = undefined;
+        },
+        fulfilled: (state, action) => {
+          state.status = "idle";
+          state.error = undefined;
+          state.childrenLessons = action.payload.data || [];
+        },
+        rejected: (state, action) => {
+          state.status = "failed";
+          state.error = action.error;
+        },
+      }
+    ),
+
     resetError: create.reducer((state) => {
       state.error = undefined;
     }),
@@ -233,6 +261,7 @@ export const childrenSlice = createAppSlice({
     selectChildren: (Children) => Children.children || [],
     selectChild: (Children) => Children.child || undefined,
     selectChildrenOptions: (Children) => Children.childrenOptions || [],
+    selectChildrenWithLessons: (Children) => Children.childrenLessons || [],
     selectChildrenCount: (Children) => Children.count || 0,
     selectChildrenStatus: (Children) => Children.status || "idle",
     selectChildrenError: (Children) => Children.error || undefined,
@@ -244,6 +273,7 @@ export const {
   setChildrenAsync,
   setChildAsync,
   setChildrenOptionsAsync,
+  setChildrenWithLessonsAsync,
   createChildAsync,
   updateChildAsync,
   removeChildAsync,
@@ -258,6 +288,7 @@ export const {
   selectChildren,
   selectChild,
   selectChildrenOptions,
+  selectChildrenWithLessons,
   selectChildrenCount,
   selectChildrenStatus,
   selectChildrenError,

@@ -5,8 +5,10 @@ export const generateQueryParams = (
 
   let queryParams = "";
 
-  Object.keys(filters).map((key) => {
-    queryParams += `${key}=${filters[key]}&`;
+  const keys = Object.keys(filters);
+
+  keys.map((key, index) => {
+    queryParams += `${key}=${filters[key]}${keys.length - 1 === index ? "" : "&"}`;
   });
 
   return queryParams;

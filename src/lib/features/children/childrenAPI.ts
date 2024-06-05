@@ -1,10 +1,11 @@
 import { baseApiCall, baseApiCallBody } from "@/lib/baseApiCall";
 import { IPagination } from "@/interfaces/IPagination";
 import CustomError from "@/types/custom-error";
-import { IChild } from "@/interfaces/IChild";
+import { IChild, IChildWithLesson } from "@/interfaces/IChild";
 import { IChildPayload } from "@/interfaces/IChildPayload";
 import { IChildOption } from "@/interfaces/IChildOption";
 import { IChildLesson } from "@/interfaces/IChildLesson";
+import { generateQueryParams } from "@/utils/query";
 
 interface IChildrenResponse {
   data: IChild[];
@@ -19,8 +20,8 @@ interface IChildrenOptionsResponse {
   status: number;
 }
 
-interface IChildResponse {
-  data: IChild;
+interface IChildrenLessonsResponse {
+  data: IChildWithLesson[];
   message: string;
   status: number;
 }
@@ -85,9 +86,11 @@ export const createChild = async (data: IChildPayload) => {
   return result;
 };
 
-export const fetchChildrenOptions = async () => {
+export const fetchChildrenOptions = async ({ filters }: IPagination) => {
+  const queryParams = generateQueryParams(filters);
+
   const response = await baseApiCall(
-    `${process.env.NEXT_PUBLIC_API_URL}/children/options`,
+    `${process.env.NEXT_PUBLIC_API_URL}/children/options?${queryParams}`,
     "GET"
   );
   const result: IChildrenOptionsResponse = await response.json();
@@ -143,6 +146,25 @@ export const updateChildLessons = async (data: {
     data
   );
   const result: IChildLessonsResponse = await response.json();
+
+  if (response.status !== 200) {
+    const customError = new CustomError(result.message, response.status);
+    throw new Error(customError.stringify());
+  }
+
+  return result;
+};
+
+export const fetchChildrenWithLessons = async (
+  lessonId: string,
+  { filters }: IPagination
+) => {
+  const queryParams = generateQueryParams(filters);
+  const response = await baseApiCall(
+    `${process.env.NEXT_PUBLIC_API_URL}/children/lesson/${lessonId}?${queryParams}`,
+    "GET"
+  );
+  const result: IChildrenLessonsResponse = await response.json();
 
   if (response.status !== 200) {
     const customError = new CustomError(result.message, response.status);

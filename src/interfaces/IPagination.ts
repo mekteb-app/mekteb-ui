@@ -1,9 +1,9 @@
 export interface IPagination {
-  page: number;
-  count: number;
+  page?: number;
+  count?: number;
   filters?:
     | {
-        [key: string]: string;
+        [key: string]: any;
       }
     | undefined;
 }

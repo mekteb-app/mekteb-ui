@@ -1,9 +1,11 @@
 import { createAppSlice } from "@/lib/createAppSlice";
-import { fetchLessons } from "./lessonsAPI";
-import { ILesson } from "@/interfaces/ILesson";
+import { fetchLessonOptions, fetchLessons } from "./lessonsAPI";
+import { ILesson, ILessonOption } from "@/interfaces/ILesson";
+import { IPagination } from "@/interfaces/IPagination";
 
 export interface ILessonSliceState {
   lessons: ILesson[];
+  lessonOptions: ILessonOption[];
   status: "idle" | "loading" | "failed";
   count: number;
   error: any;
@@ -11,6 +13,7 @@ export interface ILessonSliceState {
 
 const initialState: ILessonSliceState = {
   lessons: [],
+  lessonOptions: [],
   status: "idle",
   count: 0,
   error: undefined,
@@ -48,6 +51,30 @@ export const lessonSlice = createAppSlice({
       }
     ),
 
+    // Fetch lessons from the API and set them in the state
+    setLessonOptionsAsync: create.asyncThunk(
+      async ({ filters }: IPagination) => {
+        const response = await fetchLessonOptions({ filters });
+        // The value we return becomes the `fulfilled` action payload
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+          state.error = undefined;
+        },
+        fulfilled: (state, action) => {
+          state.status = "idle";
+          state.error = undefined;
+          state.lessonOptions = action.payload.data || [];
+        },
+        rejected: (state, action) => {
+          state.status = "failed";
+          state.error = action.error;
+        },
+      }
+    ),
+
     resetError: create.reducer((state) => {
       state.error = undefined;
     }),
@@ -62,6 +89,7 @@ export const lessonSlice = createAppSlice({
   // Selectors
   selectors: {
     selectLessons: (Lesson) => Lesson.lessons || [],
+    selectLessonOptions: (Lesson) => Lesson.lessonOptions || [],
     selectLessonsCount: (Lesson) => Lesson.count || 0,
     selectLessonStatus: (Lesson) => Lesson.status || "idle",
     selectLessonError: (Lesson) => Lesson.error || undefined,
@@ -69,12 +97,17 @@ export const lessonSlice = createAppSlice({
 });
 
 // Action creators are generated for each case reducer function.
-export const { setLessonsAsync, resetError, resetLessonState } =
-  lessonSlice.actions;
+export const {
+  setLessonsAsync,
+  setLessonOptionsAsync,
+  resetError,
+  resetLessonState,
+} = lessonSlice.actions;
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
 export const {
   selectLessons,
+  selectLessonOptions,
   selectLessonsCount,
   selectLessonStatus,
   selectLessonError,

@@ -13,7 +13,7 @@ interface IAppSelectProps {
   options: Option[];
   placeholder?: string;
   formatValue?: (val: string) => any;
-  value?: Option;
+  value?: Option | undefined;
 }
 
 const AppSelect: React.FC<IAppSelectProps> = forwardRef(
